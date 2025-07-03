@@ -77,6 +77,10 @@ config TARGET_QEMU_RISCV64
 	select ARCH_RISCV64
 	select HAS_SWUPDATE if KERNEL_6_1 || KERNEL_6_12
 
+config TARGET_TI_AM62PX_SK
+	bool "Texas Instruments AM62Px SK"
+	select ARCH_ARM64
+
 endchoice
 
 config KAS_INCLUDE_BOARD
@@ -89,6 +93,7 @@ config KAS_INCLUDE_BOARD
 	default "kas/board/bbb.yml" if TARGET_BBB
 	default "kas/board/iwg20m.yml" if TARGET_IWG20D
 	default "kas/board/qemu-riscv64.yml" if TARGET_QEMU_RISCV64
+	default "kas/board/ti-am62px-sk.yml" if TARGET_TI_AM62PX_SK
 
 comment "Kernel options"
 
@@ -98,17 +103,19 @@ choice
 
 config KERNEL_4_4
 	bool "Kernel 4.4.x-cip"
-	depends on !ARCH_ARM64 && !ARCH_RISCV64
+	depends on !ARCH_ARM64 && !ARCH_RISCV64 && !TARGET_TI_AM62PX_SK
 
 config KERNEL_4_19
 	bool "Kernel 4.19.x-cip"
-	depends on !ARCH_RISCV64
+	depends on !ARCH_RISCV64 && !TARGET_TI_AM62PX_SK
 
 config KERNEL_5_10
 	bool "Kernel 5.10.x-cip"
+	depends on !TARGET_TI_AM62PX_SK
 
 config KERNEL_6_1
 	bool "Kernel 6.1.x-cip"
+	depends on !TARGET_TI_AM62PX_SK
 
 config KERNEL_6_12
 	bool "Kernel 6.12.x-cip"

@@ -26,7 +26,7 @@ SRC_URI:append:secureboot = " \
 S = "${WORKDIR}/u-boot-${PV}"
 
 DEBIAN_BUILD_DEPENDS += ", libssl-dev:native, libssl-dev:${DISTRO_ARCH}, \
-    libgnutls28-dev:native, libgnutls28-dev:${DISTRO_ARCH}"
+    libgnutls28-dev:native, libgnutls28-dev:${DISTRO_ARCH}, yamllint:native"
 
 DEBIAN_BUILD_DEPENDS:append:secureboot = ", \
     libgnutls28-dev:native, libgnutls28-dev:${DISTRO_ARCH}"

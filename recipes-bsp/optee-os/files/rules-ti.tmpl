@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+
+# Debian rules for custom OP-TEE OS build
+#
+# This software is a part of ISAR.
+# Copyright (c) Siemens AG, 2020
+#
+# SPDX-License-Identifier: MIT
+
+ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+export CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)-
+endif
+
+override_dh_auto_build:
+	CFLAGS= LDFLAGS= $(MAKE) $(PARALLEL_MAKE) PLATFORM=${OPTEE_PLATFORM} \
+		CROSS_COMPILE=arm-linux-gnueabihf- \
+		CROSS_COMPILE64=${CROSS_COMPILE} \
+		${OPTEE_EXTRA_BUILDARGS}
+
+%:
+	dh $@
