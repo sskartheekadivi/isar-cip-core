@@ -34,6 +34,15 @@ config ARCH_RISCV64
 config HAS_SWUPDATE
 	bool
 
+config HAS_SECURE_BOOT
+	bool
+
+config HAS_DATA_ENCRYPTION
+	bool
+
+config HAS_FULL_ENCRYPTION
+	bool
+
 choice
 	prompt "Target board"
 	default TARGET_QEMU_AMD64
@@ -42,16 +51,25 @@ config TARGET_QEMU_AMD64
 	bool "QEMU AMD64 (x86-64)"
 	select ARCH_AMD64
 	select HAS_SWUPDATE
+	select HAS_SECURE_BOOT
+	select HAS_DATA_ENCRYPTION
+	select HAS_FULL_ENCRYPTION
 
 config TARGET_X86_UEFI
 	bool "Generic x86 machine booting via UEFI"
 	select ARCH_AMD64
 	select HAS_SWUPDATE
+	select HAS_SECURE_BOOT
+	select HAS_DATA_ENCRYPTION
+	select HAS_FULL_ENCRYPTION
 
 config TARGET_QEMU_ARM64
 	bool "QEMU ARM64 (aarch64)"
 	select ARCH_ARM64
 	select HAS_SWUPDATE
+	select HAS_SECURE_BOOT
+	select HAS_DATA_ENCRYPTION
+	select HAS_FULL_ENCRYPTION
 
 config TARGET_HIHOPE_RZG2M
 	bool "HopeRun HiHope-RZ/G2M"
@@ -62,6 +80,9 @@ config TARGET_QEMU_ARM
 	bool "QEMU ARM (armhf)"
 	select ARCH_ARM
 	select HAS_SWUPDATE
+	select HAS_SECURE_BOOT
+	select HAS_DATA_ENCRYPTION
+	select HAS_FULL_ENCRYPTION
 
 config TARGET_BBB
 	bool "BeagleBone Black"
@@ -214,7 +235,7 @@ config IMAGE_SECURITY
 	select IMAGE_SWUPDATE
 	select IMAGE_SECURE_BOOT
 	select IMAGE_DATA_ENCRYPTION
-	depends on TARGET_QEMU_AMD64 || TARGET_QEMU_ARM64 || TARGET_QEMU_ARM || TARGET_X86_UEFI
+	depends on HAS_SWUPDATE && HAS_SECURE_BOOT && HAS_DATA_ENCRYPTION
 	help
 	  This enables security, encryption, secureboot and swupdate for IEC 62443-4-2.
 
@@ -257,7 +278,7 @@ config KAS_INCLUDE_EROFS
 
 config IMAGE_SECURE_BOOT
 	bool "Secure boot support"
-	depends on TARGET_QEMU_AMD64 || TARGET_QEMU_ARM64 || TARGET_QEMU_ARM || TARGET_X86_UEFI
+	depends on HAS_SECURE_BOOT
 
 config KAS_INCLUDE_SWUPDATE_SECBOOT
 	string
@@ -270,13 +291,13 @@ config KAS_INCLUDE_DELTA_UPDATE
 
 config IMAGE_DATA_ENCRYPTION
 	bool "Encrypt data partitions on first boot"
-	depends on TARGET_QEMU_AMD64 || TARGET_QEMU_ARM64 || TARGET_QEMU_ARM || TARGET_X86_UEFI
+	depends on HAS_DATA_ENCRYPTION
 	help
 	  This enables LUKS encryption for the partitions /var and /home.
 
 config IMAGE_FULL_ENCRYPTION
 	bool "Encrypt rootfs and data partitions"
-	depends on TARGET_QEMU_AMD64 || TARGET_QEMU_ARM64 || TARGET_QEMU_ARM || TARGET_X86_UEFI
+	depends on HAS_FULL_ENCRYPTION
 	select IMAGE_DATA_ENCRYPTION
 	help
 	  This enables LUKS encryption for all non-boot partitions on first boot.
