@@ -16,6 +16,7 @@ header:
 
 target: cip-core-image-security
 
+# (Warning) CIP users are strongly recommended not to use CIP default credentials for production images.
 local_conf_header:
   root_password: |
     USERS += "root"

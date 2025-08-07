@@ -26,6 +26,19 @@ Save & Build
 host$ ./start-qemu.sh x86
 ```
 
+Login using the following credentials
+
+```
+username: root
+password: CIPsecurity@123
+```
+
+**Note**:
+
+The actual credentials are injected here [kas/opt/security.yml](kas/opt/security.yml). CIP users are strongly recommended not to use CIP default credentials for production images.
+
+Refer [password policy](https://gitlab.com/cip-project/cip-documents/-/blob/master/user/user_manual/user_manual.rst#password-policies) and set the password accordingly for production images. The actual password policy settings are defined in the `postinst` script of security-customizations [security-customizations/files/postinst](recipes-core/security-customizations/files/postinst)
+
 # Copy security tests in to the Linux image
 - Clone the cip-security-tests from following URL
 ```

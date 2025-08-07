@@ -6,7 +6,7 @@
 
 set -e
 
-echo "CIP Core Security Image (login: root/CIPsecurity@123)" > /etc/issue
+echo "CIP Core Security Image" > /etc/issue
 
 # CR1.7: Strength of password-based authentication
 # Pam configuration to  enforce password strength
