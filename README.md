@@ -52,6 +52,14 @@ or via bmap-tools
 
     bmaptool copy build/tmp/deploy/images/bbb/cip-core-image-cip-core-buster-bbb.wic /dev/<medium-device>
 
+## Documentation
+
+The following topics are in a separate READMEs:
+ - [Secureboot](./doc/README.secureboot.md)
+ - [Update process with SWUpdate](./doc/README.swupdate.md)
+ - [Update and Secure boot signing](./doc/README.signing.md)
+ - [Encryption with TPM2](./doc/README.tpm2.encryption.md)
+ - [Release policy](./doc/README_version-release-policy.md)
 
 ## Community Resources
 
@@ -73,7 +81,7 @@ Continuous integration:
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution process.
 
- 
+
 ## License
 
 Unless otherwise stated in the respective file, files in this layer are
