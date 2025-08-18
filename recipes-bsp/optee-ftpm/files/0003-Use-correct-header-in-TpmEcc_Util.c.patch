@@ -1,0 +1,38 @@
+From 27028e9a351355eeca0cbf18b65593637d6e1f0d Mon Sep 17 00:00:00 2001
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 18 Aug 2025 11:20:35 +0200
+Subject: [PATCH 3/4] Use correct header in TpmEcc_Util.c
+
+Avoids
+
+TPMCmd/tpm/src/crypt/ecc/TpmEcc_Util.c:26:25: warning: no previous prototype for 'TpmEcc_PointFrom2B' [-Wmissing-prototypes]
+TPMCmd/tpm/src/crypt/ecc/TpmEcc_Util.c:48:17: warning: no previous prototype for 'TpmEcc_PointTo2B' [-Wmissing-prototypes]
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ TPMCmd/tpm/src/crypt/ecc/TpmEcc_Util.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/TPMCmd/tpm/src/crypt/ecc/TpmEcc_Util.c b/TPMCmd/tpm/src/crypt/ecc/TpmEcc_Util.c
+index ded842a..43220d5 100644
+--- a/TPMCmd/tpm/src/crypt/ecc/TpmEcc_Util.c
++++ b/TPMCmd/tpm/src/crypt/ecc/TpmEcc_Util.c
+@@ -2,7 +2,7 @@
+ // This file contains utility functions to help using the external Math library
+ // for Ecc functions.
+ #include "Tpm.h"
+-#include "TpmMath_Util_fp.h"
++#include "TpmEcc_Util_fp.h"
+ 
+ #if ALG_ECC
+ 
+@@ -59,4 +59,4 @@ LIB_EXPORT BOOL TpmEcc_PointTo2B(
+         ecP, p->x.t.buffer, &p->x.t.size, p->y.t.buffer, &p->y.t.size);
+ }
+ 
+-#endif  // ALG_ECC
+\ No newline at end of file
++#endif  // ALG_ECC
+-- 
+2.43.0
+

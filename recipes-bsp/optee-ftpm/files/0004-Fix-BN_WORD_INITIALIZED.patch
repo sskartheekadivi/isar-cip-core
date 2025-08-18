@@ -1,0 +1,28 @@
+From ea7b96b4e1c5b1667b125b61099817fb5dc740d0 Mon Sep 17 00:00:00 2001
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 18 Aug 2025 12:15:40 +0200
+Subject: [PATCH 4/4] Fix BN_WORD_INITIALIZED
+
+BN_STRUCT needs the name and the number of bits as parameters.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ TPMCmd/tpm/cryptolibs/TpmBigNum/include/BnValues.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/TPMCmd/tpm/cryptolibs/TpmBigNum/include/BnValues.h b/TPMCmd/tpm/cryptolibs/TpmBigNum/include/BnValues.h
+index 0cb72cf..686b8eb 100644
+--- a/TPMCmd/tpm/cryptolibs/TpmBigNum/include/BnValues.h
++++ b/TPMCmd/tpm/cryptolibs/TpmBigNum/include/BnValues.h
+@@ -128,7 +128,7 @@ extern const bignum_t BnConstZero;
+ // This is used to create a word-size bigNum and initialize it with
+ // an input parameter to a function.
+ #define BN_WORD_INITIALIZED(name, initial) \
+-    BN_STRUCT(RADIX_BITS) name##_;         \
++    BN_STRUCT(name, RADIX_BITS) name##_;         \
+     bigNum name = BnInitializeWord(        \
+         (bigNum) & name##_, BN_STRUCT_ALLOCATION(RADIX_BITS), initial)
+ 
+-- 
+2.43.0
+

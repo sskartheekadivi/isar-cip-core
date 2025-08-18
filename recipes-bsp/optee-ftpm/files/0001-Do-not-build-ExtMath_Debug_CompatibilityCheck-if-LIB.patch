@@ -1,0 +1,37 @@
+From fcccc82514609f8f61bca69646695303b0197b64 Mon Sep 17 00:00:00 2001
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 18 Aug 2025 11:12:43 +0200
+Subject: [PATCH 1/4] Do not build ExtMath_Debug_CompatibilityCheck if
+ LIBRARY_COMPATIBILITY_CHECK is off
+
+Will fail the build due to missing symbol BnMathLibraryCompatibilityCheck
+when LIBRARY_COMPATIBILITY_CHECK is disabled.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ TPMCmd/tpm/cryptolibs/TpmBigNum/TpmBigNumThunks.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/TPMCmd/tpm/cryptolibs/TpmBigNum/TpmBigNumThunks.c b/TPMCmd/tpm/cryptolibs/TpmBigNum/TpmBigNumThunks.c
+index 3878ffe..2ce7873 100644
+--- a/TPMCmd/tpm/cryptolibs/TpmBigNum/TpmBigNumThunks.c
++++ b/TPMCmd/tpm/cryptolibs/TpmBigNum/TpmBigNumThunks.c
+@@ -19,6 +19,7 @@ LIB_EXPORT int ExtMath_LibInit(void)
+     return BnSupportLibInit();
+ }
+ 
++#if LIBRARY_COMPATIBILITY_CHECK
+ //** MathLibraryCompatibililtyCheck()
+ // This function is only used during development to make sure that the library
+ // that is being referenced is using the same size of data structures as the TPM.
+@@ -26,6 +27,7 @@ LIB_EXPORT BOOL ExtMath_Debug_CompatibilityCheck(void)
+ {
+     return BnMathLibraryCompatibilityCheck();
+ }
++#endif
+ 
+ // ***************************************************************************
+ // Integer/Number Functions (non-ECC)
+-- 
+2.43.0
+

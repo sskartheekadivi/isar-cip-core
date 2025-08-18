@@ -1,0 +1,81 @@
+From 9eafd9b35c4120276aed6291313e6d6359852554 Mon Sep 17 00:00:00 2001
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 18 Aug 2025 11:18:10 +0200
+Subject: [PATCH 2/4] Avoid compiler warnings when -Wold-style-definition is
+ used
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ TPMCmd/Platform/src/VendorInfo.c                          | 6 +++---
+ .../platform_interface/tpm_to_platform_interface.h        | 8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/TPMCmd/Platform/src/VendorInfo.c b/TPMCmd/Platform/src/VendorInfo.c
+index d3d3832..746f76b 100644
+--- a/TPMCmd/Platform/src/VendorInfo.c
++++ b/TPMCmd/Platform/src/VendorInfo.c
+@@ -29,7 +29,7 @@ static uint32_t StringToUint32(char s[4])
+ 
+ // return the 4 character Manufacturer Capability code.  This
+ // should come from the platform library since that is provided by the manufacturer
+-LIB_EXPORT uint32_t _plat__GetManufacturerCapabilityCode()
++LIB_EXPORT uint32_t _plat__GetManufacturerCapabilityCode(void)
+ {
+     return StringToUint32(MANUFACTURER);
+ }
+@@ -56,14 +56,14 @@ LIB_EXPORT uint32_t _plat__GetVendorCapabilityCode(int index)
+ 
+ // return the most-significant 32-bits of the TPM Firmware Version reported by
+ // getCapability.
+-LIB_EXPORT uint32_t _plat__GetTpmFirmwareVersionHigh()
++LIB_EXPORT uint32_t _plat__GetTpmFirmwareVersionHigh(void)
+ {
+     return FIRMWARE_V1;
+ }
+ 
+ // return the least-significant 32-bits of the TPM Firmware Version reported by
+ // getCapability.
+-LIB_EXPORT uint32_t _plat__GetTpmFirmwareVersionLow()
++LIB_EXPORT uint32_t _plat__GetTpmFirmwareVersionLow(void)
+ {
+     return FIRMWARE_V2;
+ }
+diff --git a/TPMCmd/tpm/include/platform_interface/tpm_to_platform_interface.h b/TPMCmd/tpm/include/platform_interface/tpm_to_platform_interface.h
+index 7b55c85..edc5760 100644
+--- a/TPMCmd/tpm/include/platform_interface/tpm_to_platform_interface.h
++++ b/TPMCmd/tpm/include/platform_interface/tpm_to_platform_interface.h
+@@ -325,7 +325,7 @@ LIB_EXPORT void _plat__GetPlatformManufactureData(uint8_t* pPlatformPersistentDa
+ 
+ // return the 4 character Manufacturer Capability code.  This
+ // should come from the platform library since that is provided by the manufacturer
+-LIB_EXPORT uint32_t _plat__GetManufacturerCapabilityCode();
++LIB_EXPORT uint32_t _plat__GetManufacturerCapabilityCode(void);
+ 
+ // return the 4 character VendorStrings for Capabilities.
+ // Index is ONE-BASED, and may be in the range [1,4] inclusive.
+@@ -335,11 +335,11 @@ LIB_EXPORT uint32_t _plat__GetVendorCapabilityCode(int index);
+ 
+ // return the most-significant 32-bits of the TPM Firmware Version reported by
+ // getCapability.
+-LIB_EXPORT uint32_t _plat__GetTpmFirmwareVersionHigh();
++LIB_EXPORT uint32_t _plat__GetTpmFirmwareVersionHigh(void);
+ 
+ // return the least-significant 32-bits of the TPM Firmware Version reported by
+ // getCapability.
+-LIB_EXPORT uint32_t _plat__GetTpmFirmwareVersionLow();
++LIB_EXPORT uint32_t _plat__GetTpmFirmwareVersionLow(void);
+ 
+ // return the TPM Firmware's current SVN.
+ LIB_EXPORT uint16_t _plat__GetTpmFirmwareSvn(void);
+@@ -377,7 +377,7 @@ LIB_EXPORT int _plat__GetTpmFirmwareSecret(
+ #endif  // FW_LIMITED_SUPPORT
+ 
+ // return the TPM Type returned by TPM_PT_VENDOR_TPM_TYPE
+-LIB_EXPORT uint32_t _plat__GetTpmType();
++LIB_EXPORT uint32_t _plat__GetTpmType(void);
+ 
+ // platform PCR initialization functions
+ #include <platform_interface/prototypes/platform_pcr_fp.h>
+-- 
+2.43.0
+
