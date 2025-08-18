@@ -14,16 +14,18 @@
 HOMEPAGE = "https://github.com/tianocore/edk2"
 MAINTAINER = "Sven Schultschik <sven.schultschik@siemens.com>"
 
+DESCRIPTION = "Standalone Management Mode from EDK2"
+
 inherit dpkg
 
 SRC_URI = " \
     https://github.com/tianocore/edk2/archive/refs/tags/edk2-stable${PV}.tar.gz;subdir=${S} \
-    https://github.com/tianocore/edk2-platforms/archive/${SRCREV-edk2-platforms}.tar.gz;name=edk2-platforms;subdir=${S} \
-    https://github.com/google/brotli/archive/${SRCREV-brotli}.tar.gz;name=brotli;subdir=${S} \
-    https://github.com/MIPI-Alliance/public-mipi-sys-t/archive/${SRCREV-mipisyst}.tar.gz;name=mipisyst;subdir=${S} \
+    https://github.com/tianocore/edk2-platforms/archive/${SRCREV-edk2-platforms}.tar.gz;name=edk2-platforms;downloadfilename=edk2-platforms-${SRCREV-edk2-platforms}.tar.gz;subdir=${S} \
+    https://github.com/google/brotli/archive/${SRCREV-brotli}.tar.gz;name=brotli;downloadfilename=brotli-${SRCREV-brotli}.tar.gz;subdir=${S} \
+    https://github.com/MIPI-Alliance/public-mipi-sys-t/archive/${SRCREV-mipisyst}.tar.gz;name=mipisyst;downloadfilename=mipisyst-${SRCREV-mipisyst}.tar.gz;subdir=${S} \
     https://github.com/openssl/openssl/archive/refs/tags/${PV-openssl}.tar.gz;name=openssl;subdir=${S} \
     https://github.com/Mbed-TLS/mbedtls/archive/${PV-mbedtls}.tar.gz;name=mbedtls;subdir=${S} \
-    https://github.com/DMTF/libspdm/archive/refs/tags/${PV-libspdm}.tar.gz;name=libspdm;subdir=${S} \
+    https://github.com/DMTF/libspdm/archive/refs/tags/${PV-libspdm}.tar.gz;name=libspdm;downloadfilename=libspdm-${PV-libspdm}.tar.gz;subdir=${S} \
     file://rules \
     "
 SRC_URI[sha256sum] = "5f2b5e3a267230f82e4566592fd0bfac5e205ad90520b2c9bf80f575293b7015"
