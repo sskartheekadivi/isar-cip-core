@@ -17,3 +17,5 @@ IMAGE_INSTALL += "customizations"
 
 CIP_IMAGE_OPTIONS ?= ""
 require ${CIP_IMAGE_OPTIONS}
+
+IMAGE_PREINSTALL += "pciutils mmc-utils efitools bsdextrautils tpm2-tools"

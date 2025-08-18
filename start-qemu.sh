@@ -32,7 +32,11 @@ elif grep -s -q "IMAGE_SWUPDATE: true" .config.yaml; then
 	SWUPDATE_BOOT="true"
 fi
 if grep -s -q "IMAGE_DATA_ENCRYPTION: true" .config.yaml; then
-	TPM2_ENCRYPTION="true"
+	case "${arch}" in
+		x86|x86_64|amd64)
+			TPM2_DEVICE="true"
+			;;
+	esac
 fi
 
 if [ -n "${QEMU_PATH}" ]; then
@@ -104,10 +108,10 @@ case "${arch}" in
 		QEMU_EXTRA_ARGS=" \
 			-cpu cortex-a57 \
 			-smp 4 \
-			-machine virt \
+			-machine virt,secure=on \
 			-device virtio-serial-device \
 			-device virtconsole,chardev=con -chardev vc,id=con \
-			-device virtio-blk-device,drive=disk \
+			-device sdhci-pci -device emmc,drive=disk,rpmb-partition-size=2097152 \
 			-device virtio-net-device,netdev=net"
 		KERNEL_CMDLINE=" \
 			root=/dev/vda rw"
@@ -161,22 +165,16 @@ if [ -z "${DISPLAY}" ]; then
 	esac
 fi
 
-if [ "$TPM2_ENCRYPTION" = "true" ] && [ -x /usr/bin/swtpm ]; then
+if [ "$TPM2_DEVICE" = "true" ] && [ -x /usr/bin/swtpm ]; then
 	SWTPM_DIR="${IMAGE_PREFIX}.swtpm"
 	mkdir -p "${SWTPM_DIR}"
 	if swtpm socket -d --tpmstate dir="${SWTPM_DIR}" \
-			 --ctrl type=unixio,path=/tmp/qemu-swtpm.sock \
-			 --tpm2; then
-		TPM_DEVICE=tpm-tis-device
-		case "${arch}" in
-			x86|x86_64|amd64)
-				TPM_DEVICE=tpm-tis
-				;;
-		esac
+			--ctrl type=unixio,path=/tmp/qemu-swtpm.sock \
+			--tpm2; then
 		QEMU_EXTRA_ARGS="${QEMU_EXTRA_ARGS} \
-			 -chardev socket,id=chrtpm,path=/tmp/qemu-swtpm.sock \
-			 -tpmdev emulator,id=tpm0,chardev=chrtpm \
-			 -device ${TPM_DEVICE},tpmdev=tpm0"
+				-chardev socket,id=chrtpm,path=/tmp/qemu-swtpm.sock \
+				-tpmdev emulator,id=tpm0,chardev=chrtpm \
+				-device tpm-tis,tpmdev=tpm0"
 	fi
 fi
 
@@ -214,7 +212,7 @@ if [ -n "${SECURE_BOOT}${SWUPDATE_BOOT}" ]; then
 			u_boot_bin=${FIRMWARE_BIN:-./build/tmp/deploy/images/qemu-${QEMU_ARCH}/firmware.bin}
 
 			${QEMU_PATH}${QEMU} \
-				-drive file=${IMAGE_PREFIX}.wic,discard=unmap,if=none,id=disk,format=raw \
+				-drive file=${IMAGE_PREFIX}.qemu-emmc,discard=unmap,if=none,id=disk,format=raw \
 				-bios ${u_boot_bin} \
 				${QEMU_COMMON_OPTIONS} "$@"
 			;;

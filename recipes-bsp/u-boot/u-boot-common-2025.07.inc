@@ -1,7 +1,7 @@
 #
 # CIP Core, generic profile
 #
-# Copyright (c) Siemens AG, 2022-2024
+# Copyright (c) Siemens AG, 2022-2025
 #
 # Authors:
 #  Jan Kiszka <jan.kiszka@siemens.com>
@@ -15,8 +15,10 @@ FILESPATH:append := ":${FILE_DIRNAME}/files"
 
 SRC_URI += " \
     https://ftp.denx.de/pub/u-boot/u-boot-${PV}.tar.bz2 \
+    file://0001-Kconfig-Convert-SYS_EARLY_PCI_INIT-to-Kconfig.patch \
+    file://0002-qemu_arm-Select-CONFIG_SYS_EARLY_PCI_INIT.patch \
     file://rules.tmpl;subdir=debian"
-SRC_URI[sha256sum] = "b99611f1ed237bf3541bdc8434b68c96a6e05967061f992443cb30aabebef5b3"
+SRC_URI[sha256sum] = "0f933f6c5a426895bf306e93e6ac53c60870e4b54cda56d95211bec99e63bec7"
 
 SRC_URI:append:secureboot = " \
     file://secure-boot.cfg"
@@ -26,11 +28,12 @@ S = "${WORKDIR}/u-boot-${PV}"
 DEBIAN_BUILD_DEPENDS += ", libssl-dev:native, libssl-dev:${DISTRO_ARCH}"
 
 DEBIAN_BUILD_DEPENDS:append:secureboot = ", \
-    openssl, efivar, secure-boot-secrets, python3-openssl:native"
-DEBIAN_BUILD_DEPENDS:append:secureboot:buster   = ", pesign"
-DEBIAN_BUILD_DEPENDS:append:secureboot:bullseye = ", pesign"
-DEBIAN_BUILD_DEPENDS:append:secureboot:bookworm = ", pesign"
-DEPENDS:append:secureboot = " secure-boot-secrets"
+    libgnutls28-dev:native, libgnutls28-dev:${DISTRO_ARCH}"
+#    openssl, efivar, secure-boot-secrets, python3-openssl:native"
+#DEBIAN_BUILD_DEPENDS:append:secureboot:buster   = ", pesign"
+#DEBIAN_BUILD_DEPENDS:append:secureboot:bullseye = ", pesign"
+#DEBIAN_BUILD_DEPENDS:append:secureboot:bookworm = ", pesign"
+#DEPENDS:append:secureboot = " secure-boot-secrets"
 
 do_prepare_build:append:secureboot() {
     sed -ni '/### Secure boot config/q;p' ${S}/configs/${U_BOOT_CONFIG}

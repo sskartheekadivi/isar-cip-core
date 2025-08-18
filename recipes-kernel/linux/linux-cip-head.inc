@@ -32,3 +32,7 @@ SRCREV_FORMAT = "cip-kernel"
 SRCREV_cip-kernel = "${AUTOREV}"
 
 S = "${WORKDIR}/git"
+
+SRC_URI += " \
+    file://0001-efi-stmm-Fix-incorrect-buffer-allocation-method.patch \
+    file://qemu-extra.cfg"

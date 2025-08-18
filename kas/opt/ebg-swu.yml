@@ -30,7 +30,7 @@ local_conf_header:
     DISTRO_APT_SOURCES:append:qemu-amd64:buster = " conf/distro/debian-buster-backports.list"
     DISTRO_APT_PREFERENCES:append:qemu-amd64:buster = " conf/distro/preferences.ovmf-snakeoil.conf"
     # Add U-Boot for qemu
-    IMAGER_BUILD_DEPS:append:qemu-arm64 = " u-boot-qemu-arm64"
+    IMAGER_BUILD_DEPS:append:qemu-arm64 = " trusted-firmware-a-qemu-arm64"
     IMAGER_BUILD_DEPS:append:qemu-arm = " u-boot-qemu-arm"
     IMAGER_BUILD_DEPS:append:qemu-riscv64 = " opensbi-qemu-riscv64"
   drop-ext4-images: |

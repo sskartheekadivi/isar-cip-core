@@ -23,6 +23,13 @@ repos:
   isar:
     url: https://github.com/ilbers/isar.git
     commit: d63a1cbae6f737aa843d00d8812547fe7b87104a
+    patches:
+      p1:
+        repo: cip-core
+        path: isar-patches/0001-initramfs-tee-ftpm-hook-Add-support-for-cutting-depe.patch
+      p2:
+        repo: cip-core
+        path: isar-patches/0002-optee-ftpm-Add-support-for-new-optee_ftpm-repo.patch
     layers:
       meta:
 

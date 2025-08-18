@@ -1,0 +1,96 @@
+From 8aa0c1f83d3595d0d45d46ea06fc0b0b32649da2 Mon Sep 17 00:00:00 2001
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 18 Aug 2025 15:25:43 +0200
+Subject: [PATCH 1/2] initramfs-tee-ftpm-hook: Add support for cutting
+ dependency on tee-supplicant
+
+Since kernel 6.12, there is no need for a userland tee-supplicant
+anymore since the kernel comes with a driver to handle RPMB access of
+the TEE. Make its simpler to turn userland off by introducing a
+configuration variable that can also be set in a global config, at
+machine level e.g.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ RECIPE-API-CHANGELOG.md                       |  7 +++++++
+ meta-isar/conf/machine/stm32mp15x.conf        |  2 ++
+ .../initramfs-tee-ftpm-hook_0.2.bb            | 15 ---------------
+ .../initramfs-tee-ftpm-hook_0.3.bb            | 19 +++++++++++++++++++
+ 4 files changed, 28 insertions(+), 15 deletions(-)
+ delete mode 100644 meta/recipes-initramfs/initramfs-tee-ftpm-hook/initramfs-tee-ftpm-hook_0.2.bb
+ create mode 100644 meta/recipes-initramfs/initramfs-tee-ftpm-hook/initramfs-tee-ftpm-hook_0.3.bb
+
+diff --git a/RECIPE-API-CHANGELOG.md b/RECIPE-API-CHANGELOG.md
+index 8468717d..730a4c91 100644
+--- a/RECIPE-API-CHANGELOG.md
++++ b/RECIPE-API-CHANGELOG.md
+@@ -727,3 +727,10 @@ Changes in next
+ 
+ This was never documented and never had practical relevance. `oci-archive` is
+ the useful OCI image format that can be imported, e.g., by podman.
++
++### Control tee-supplicant userspace service usage
++
++Set `TEE_SUPPLICANT_IN_USERLAND` to 0 if you are using a kernel that supports
++`CONFIG_RPMB` and you only need the daemon for RPMB access. Default is 1, but
++this will eventually be changed to 0. Therefore, explicitly set the variable
++to 1 to stay compatible.
+diff --git a/meta-isar/conf/machine/stm32mp15x.conf b/meta-isar/conf/machine/stm32mp15x.conf
+index b10dead3..7aa410a5 100644
+--- a/meta-isar/conf/machine/stm32mp15x.conf
++++ b/meta-isar/conf/machine/stm32mp15x.conf
+@@ -25,3 +25,5 @@ IMAGE_INSTALL += "u-boot-script \
+     initramfs-tee-supplicant-hook \
+     initramfs-tee-ftpm-hook \
+     "
++
++TEE_SUPPLICANT_IN_USERLAND = "1"
+diff --git a/meta/recipes-initramfs/initramfs-tee-ftpm-hook/initramfs-tee-ftpm-hook_0.2.bb b/meta/recipes-initramfs/initramfs-tee-ftpm-hook/initramfs-tee-ftpm-hook_0.2.bb
+deleted file mode 100644
+index 9f77c158..00000000
+--- a/meta/recipes-initramfs/initramfs-tee-ftpm-hook/initramfs-tee-ftpm-hook_0.2.bb
++++ /dev/null
+@@ -1,15 +0,0 @@
+-# Copyright (c) Siemens AG, 2023-2024
+-#
+-# Authors:
+-#  Su Bao Cheng <baocheng.su@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-
+-require recipes-initramfs/initramfs-hook/hook.inc
+-
+-SRC_URI += "file://local-top"
+-
+-HOOK_PREREQ = "tee-supplicant"
+-HOOK_ADD_MODULES = "tpm_ftpm_tee"
+-SCRIPT_PREREQ = "tee-supplicant"
+diff --git a/meta/recipes-initramfs/initramfs-tee-ftpm-hook/initramfs-tee-ftpm-hook_0.3.bb b/meta/recipes-initramfs/initramfs-tee-ftpm-hook/initramfs-tee-ftpm-hook_0.3.bb
+new file mode 100644
+index 00000000..d430661d
+--- /dev/null
++++ b/meta/recipes-initramfs/initramfs-tee-ftpm-hook/initramfs-tee-ftpm-hook_0.3.bb
+@@ -0,0 +1,19 @@
++# Copyright (c) Siemens AG, 2023-2025
++#
++# Authors:
++#  Su Bao Cheng <baocheng.su@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require recipes-initramfs/initramfs-hook/hook.inc
++
++SRC_URI += "file://local-top"
++
++# Can be disabled with kernel 6.12 and above
++# NOTE: default will eventually be flipped
++TEE_SUPPLICANT_IN_USERLAND ?= "1"
++
++HOOK_PREREQ = "${@'tee-supplicant' if bb.utils.to_boolean(d.getVar('TEE_SUPPLICANT_IN_USERLAND')) else ''}"
++HOOK_ADD_MODULES = "tpm_ftpm_tee"
++SCRIPT_PREREQ = "${@'tee-supplicant' if bb.utils.to_boolean(d.getVar('TEE_SUPPLICANT_IN_USERLAND')) else ''}"
+-- 
+2.43.0
+
