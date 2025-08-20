@@ -11,8 +11,8 @@
 # SPDX-License-Identifier: MIT
 
 tpm2_check_device() {
-	tpm2_pcrread -T device:"$1" "$pcr_bank_hash_type":7 --quiet &&
-		tpm2_testparms -T device:"$1" "$tpm_key_algorithm" --quiet
+	tpm2_pcrread -T device:"$1" "$pcr_bank_hash_type":7 --quiet 2>/dev/null &&
+		tpm2_testparms -T device:"$1" "$tpm_key_algorithm" --quiet 2>/dev/null
 }
 
 TPM2_HANDLE="0x81080001"
