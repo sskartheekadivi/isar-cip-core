@@ -42,6 +42,7 @@ esac
 
 # load necessary kernel modules:
 modprobe tpm_tis
+modprobe tpm_tis_spi
 modprobe tpm_crb
 
 modprobe ecb

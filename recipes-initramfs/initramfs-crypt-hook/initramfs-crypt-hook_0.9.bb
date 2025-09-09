@@ -39,7 +39,7 @@ DEBIAN_DEPENDS:append:systemd:trixie = ", systemd-cryptsetup"
 DEBIAN_DEPENDS:append:systemd = ", systemd (>= 251)"
 
 HOOK_ADD_MODULES = " \
-    tpm tpm_tis_core tpm_tis tpm_crb dm_mod dm_crypt \
+    tpm tpm_tis_core tpm_tis tpm_tis_spi tpm_crb dm_mod dm_crypt \
     ecb aes_generic xts"
 
 HOOK_COPY_EXECS = " \
