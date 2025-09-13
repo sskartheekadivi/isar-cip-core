@@ -22,11 +22,12 @@ SRC_URI = " \
     https://github.com/siemens/efibootguard/archive/refs/tags/v${EBG_VERSION}.tar.gz;downloadfilename=efibootguard_${EBG_VERSION}.orig.tar.gz;unpack=0;name=tarball \
     git://salsa.debian.org/debian/efibootguard.git;protocol=https;branch=master;name=debian \
     file://debian-patches/0001-d-control-Make-compatible-with-debian-buster.patch \
+    file://debian-patches/0002-Revert-d-Enable-unit-tests-post-trixie.patch \
     "
-SRC_URI[tarball.sha256sum] = "167a808d508558341b81d9a493f76161ac7fd7119e764435eae1b13e31a69737"
-SRCREV_debian = "040c116a61ffc99a92b6cbdb793abb7f51ef8d4a"
+SRC_URI[tarball.sha256sum] = "f252e87b6acc74df34a0d894f2b5188fe797c2a2b7a14a231b9f224ad9b9de20"
+SRCREV_debian = "86f686fab1a5a55c445718d4bd6a32106f2b8800"
 
-PROVIDES = "libebgenv-dev libebgenv0 efibootguard"
+PROVIDES = "libebgenv-dev libebgenv0 efibootguard efibootguard-tools"
 
 S = "${WORKDIR}/git"
 

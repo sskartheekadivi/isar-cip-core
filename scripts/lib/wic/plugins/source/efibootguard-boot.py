@@ -215,7 +215,6 @@ class EfibootguardBootPlugin(SourcePlugin):
     def _create_unified_kernel_image(cls, rootfs_dir, cr_workdir, cmdline,
                                      deploy_dir, kernel_image, initrd_image,
                                      dtb_files, source_params):
-        rootfs_path = rootfs_dir.get('ROOTFS_DIR')
         efiarch = get_bitbake_var("EFI_ARCH")
         if not efiarch:
             msger.error("Bitbake variable 'EFI_ARCH' not set, exiting\n")
@@ -225,9 +224,8 @@ class EfibootguardBootPlugin(SourcePlugin):
             msger.error("Bitbake variable 'EFI_LIB_ARCH' not set, exiting\n")
             exit(1)
 
-        efistub = "{rootfs_path}/usr/lib/{libpath}/efibootguard/kernel-stub{efiarch}.efi"\
-            .format(rootfs_path=rootfs_path,
-                    libpath=libarch,
+        efistub = "/usr/lib/{libpath}/efibootguard/kernel-stub{efiarch}.efi"\
+            .format(libpath=libarch,
                     efiarch=efiarch)
         uefi_kernel_name = get_bitbake_var('UKI_FILENAME') or 'linux.efi'
         uefi_kernel_file = "{deploy_dir}/{uefi_kernel_name}"\

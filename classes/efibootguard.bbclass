@@ -9,8 +9,8 @@
 # SPDX-License-Identifier: MIT
 #
 
-IMAGE_INSTALL:append = " efibootguard libebgenv0"
-IMAGER_INSTALL:wic:append = " efibootguard:${DISTRO_ARCH}"
+IMAGE_INSTALL:append = " efibootguard-tools libebgenv0"
+IMAGER_INSTALL:wic:append = " efibootguard:${DISTRO_ARCH} efibootguard-tools:${DISTRO_ARCH}"
 WDOG_TIMEOUT ?= "60"
 WICVARS += "WDOG_TIMEOUT KERNEL_IMAGE INITRD_DEPLOY_FILE DTB_FILES EFI_ARCH EFI_LIB_ARCH UKI_FILENAME"
 IMAGE_TYPEDEP:swu:append = " wic"

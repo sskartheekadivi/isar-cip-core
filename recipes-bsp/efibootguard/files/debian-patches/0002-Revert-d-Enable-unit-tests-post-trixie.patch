@@ -1,0 +1,41 @@
+From dce9246ecb5935d815a1b2c1975af00d542da562 Mon Sep 17 00:00:00 2001
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Sat, 13 Sep 2025 07:29:35 +0200
+Subject: [PATCH 2/2] Revert "d/*: Enable unit tests post-trixie"
+
+This reverts commit 2bba3769aa3a6d80180ed96501e7b2a852f30b78.
+
+Only supported after trixie.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ debian/control | 1 -
+ debian/rules   | 3 +++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/debian/control b/debian/control
+index c56dd1e..684fc1b 100644
+--- a/debian/control
++++ b/debian/control
+@@ -7,7 +7,6 @@ Build-Depends: debhelper,
+  check,
+  gnu-efi,
+  help2man <!nodoc>,
+- libfff-dev <!nocheck>,
+  libpci-dev,
+  pkgconf,
+  python3-shtab,
+diff --git a/debian/rules b/debian/rules
+index 12a3ffb..ee00053 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -20,3 +20,6 @@ ifeq (,$(filter nodoc,$(DEB_BUILD_OPTIONS) $(DEB_BUILD_PROFILES)))
+ 		tools/bg_gen_unified_kernel
+ endif
+ 
++# do not run the tests until fff is available in Debian
++override_dh_auto_test:
++	true
+-- 
+2.51.0
+
