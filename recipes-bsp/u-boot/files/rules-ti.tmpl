@@ -33,7 +33,7 @@ override_dh_auto_build:
 
 	$(MAKE) $(PARALLEL_MAKE) ${U_BOOT_A53_CONFIG}
 	$(MAKE) $(PARALLEL_MAKE) BL31=/usr/lib/trusted-firmware-a/ti-k3/bl31.bin \
-		TEE=/usr/lib/optee-os/ti-k3/tee-pager_v2.bin BINMAN_INDIRS=${BINMAN_INDIRS}
+		TEE=/usr/lib/optee-os/ti-k3/tee-raw.bin BINMAN_INDIRS=${BINMAN_INDIRS}
 	$(MAKE) $(PARALLEL_MAKE) u-boot-initial-env
 	$(MAKE) $(PARALLEL_MAKE) $(SET_CROSS_BUILD_TOOLS) NO_SDL=1 tools-only envtools
 

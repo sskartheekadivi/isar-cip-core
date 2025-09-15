@@ -103,6 +103,8 @@ config TARGET_TI_AM62PX_SK
 	select ARCH_ARM64
 	select HAS_SWUPDATE
 	select HAS_SECURE_BOOT
+	select HAS_DATA_ENCRYPTION
+	select HAS_FULL_ENCRYPTION
 
 endchoice
 
