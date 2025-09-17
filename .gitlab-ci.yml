@@ -663,7 +663,10 @@ cve-checks:
     - large
   script:
     - scripts/run-cve-checks.sh
-  when: manual
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
+    - when: manual
   allow_failure: true
   artifacts:
     expire_in: 1 day
