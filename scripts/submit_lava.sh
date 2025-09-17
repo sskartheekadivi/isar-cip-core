@@ -38,8 +38,6 @@ image_args[qemu-arm64]="-cpu cortex-a57 -machine virt -smp 4 -device virtio-seri
 image_args[qemu-arm]="-cpu cortex-a15 -machine virt -smp 2 -device virtio-serial-device -device virtconsole,chardev=con -chardev vc,id=con -device virtio-blk-device,drive=disk -device virtio-net-device,netdev=net -device tpm-tis-device,tpmdev=tpm0"
 
 set_up (){
-	echo "Installing dependencies to run this script..."
-	sudo apt update && sudo apt install -y --no-install-recommends lavacli curl xmlstarlet
 	job_dir="$(mktemp -d)"
 }
 
