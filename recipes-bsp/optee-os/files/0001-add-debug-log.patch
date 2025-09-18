@@ -1,0 +1,76 @@
+From 1dd47189e165cd4252c9be4feb6635f22b3c9a98 Mon Sep 17 00:00:00 2001
+From: Sai Sree Kartheek Adivi <sskartheekadivi@gmail.com>
+Date: Wed, 17 Sep 2025 21:29:10 +0530
+Subject: [PATCH] add debug log
+
+Signed-off-by: Sai Sree Kartheek Adivi <sskartheekadivi@gmail.com>
+---
+ core/tee/tee_rpmb_fs.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/core/tee/tee_rpmb_fs.c b/core/tee/tee_rpmb_fs.c
+index cf7d6c02e..ffdc75ac9 100644
+--- a/core/tee/tee_rpmb_fs.c
++++ b/core/tee/tee_rpmb_fs.c
+@@ -1203,6 +1203,7 @@ static TEE_Result tee_rpmb_init(void)
+ 	TEE_Result res = TEE_SUCCESS;
+ 	struct rpmb_dev_info dev_info = { };
+ 
++	DMSG("kart: trying rpmb init");
+ 	if (rpmb_dead)
+ 		return TEE_ERROR_COMMUNICATION;
+ 
+@@ -1212,12 +1213,14 @@ static TEE_Result tee_rpmb_init(void)
+ 			return TEE_ERROR_OUT_OF_MEMORY;
+ 	}
+ 
++	DMSG("kart: checking reinit");
+ 	if (rpmb_ctx->reinit) {
+ 		if (!rpmb_ctx->key_verified) {
+ 			rpmb_ctx->wr_cnt_synced = false;
+ 			rpmb_ctx->key_derived = false;
+ 			rpmb_ctx->dev_info_synced = false;
+ 			rpmb_ctx->reinit = false;
++			DMSG("kart: key_verified, going to next");
+ 			goto next;
+ 		}
+ 		res = rpmb_probe_reset();
+@@ -1225,6 +1228,7 @@ static TEE_Result tee_rpmb_init(void)
+ 			if (res != TEE_ERROR_NOT_SUPPORTED &&
+ 			    res != TEE_ERROR_NOT_IMPLEMENTED)
+ 				return res;
++			DMSG("kart: rpmb_probe_reset, doing legacy init");
+ 			return legacy_rpmb_init();
+ 		}
+ 		while (true) {
+@@ -1241,21 +1245,26 @@ static TEE_Result tee_rpmb_init(void)
+ 		}
+ 	}
+ 
++	DMSG("kart: key verified, success");
+ 	if (rpmb_ctx->key_verified)
+ 		return TEE_SUCCESS;
+ 
+ next:
+-	if (IS_ENABLED(CFG_RPMB_WRITE_KEY))
++	if (IS_ENABLED(CFG_RPMB_WRITE_KEY)) {
++		DMSG("kart: cfg_rpmb_write_key enabled, doing legacy init");
+ 		return legacy_rpmb_init();
++	}
+ 
+ 	res = rpmb_probe_reset();
+ 	if (res) {
+ 		if (res != TEE_ERROR_NOT_SUPPORTED &&
+ 		    res != TEE_ERROR_NOT_IMPLEMENTED)
+ 			return res;
++		DMSG("kart: probe reset failed again, doing legacy");
+ 		return legacy_rpmb_init();
+ 	}
+ 
++	DMSG("kart: rpmb probe loop start");
+ 	while (true) {
+ 		res = rpmb_probe_next(&dev_info);
+ 		if (res) {
+-- 
+2.43.0
+

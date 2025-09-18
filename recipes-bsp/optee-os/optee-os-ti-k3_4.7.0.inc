@@ -7,7 +7,12 @@ SRC_URI += " \
     https://github.com/OP-TEE/optee_os/archive/${PV}.tar.gz;downloadfilename=optee-os-${PV}.tar.gz \
     "
 
-SRC_URI += "file://stmm.patch"
+SRC_URI += " \
+    file://0001-add-debug-log.patch \
+    "
+
+# file://stmm.patch
+
 SRC_URI[sha256sum] = "976b9c184678516038d4e79766608e81d10bf136f76fd0db2dc48f90f994fbd9"
 
 S = "${WORKDIR}/optee_os-${PV}"
@@ -20,12 +25,18 @@ OPTEE_EXTRA_BUILDARGS = " \
     CFG_ARM64_core=y \
     CFG_USER_TA_TARGETS=ta_arm64 \
     TEE_IMPL_VERSION=${PV} \
-    CFG_TEE_CORE_LOG_LEVEL=4 CFG_TEE_TA_LOG_LEVEL=4 \
+    CFG_TEE_CORE_LOG_LEVEL=1 CFG_TEE_TA_LOG_LEVEL=1 \
     CFG_TA_MEASURED_BOOT=y CFG_CORE_DYN_SHM=y \
     CFG_REE_FS=n CFG_CORE_HEAP_SIZE=524288 CFG_RPMB_FS=y \
-    CFG_RPMB_WRITE_KEY=y CFG_RPMB_TESTKEY=y \
     CONFIG_INSECURE=y \
     "
+
+# CFG_RPMB_WRITE_KEY=y
+# CFG_RPMB_TESTKEY=y
+
+OPTEE_EXTRA_BUILDARGS:append = " \
+    CFG_UNWIND=y \
+"
 
 OPTEE_ENABLE_APPS ?= "1"
 

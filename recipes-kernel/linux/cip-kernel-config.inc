@@ -16,7 +16,7 @@ SRC_URI:append = " ${@ \
 
 # 'git://gitlab.com/cip-project/cip-kernel/cip-kernel-config.git;protocol=https;branch=master;destsuffix=cip-kernel-config;name=cip-kernel-config'
 
-SRCREV_cip-kernel-config ?= "b3a8d15acede56f6c2cf51e9c4d91334c34eebee"
+SRCREV_cip-kernel-config ?= "69a9ecd633aa386986358d7182352fb7d33c09eb"
 
 do_fetch[vardeps] += "SRCREV_cip-kernel-config"
 
