@@ -36,5 +36,3 @@ OPTEE_NAME = "ti-k3"
 
 TA_CPU = "cortex-a53"
 TA_DEV_KIT_DIR = "/usr/lib/optee-os/${OPTEE_NAME}/export-ta_arm64"
-
-OPTEE_FTPM_BUILD_ARGS_EXTRA = "CFG_TEE_TA_LOG_LEVEL=1 CFG_TA_DEBUG=n"
