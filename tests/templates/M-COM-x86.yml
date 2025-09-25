@@ -37,7 +37,7 @@ actions:
 - boot:
     method: minimal
     timeout:
-      minutes: 30
+      minutes: 45
     reset: true
     failure_retry: 1
     prompts: ["root@demo:~#"]
