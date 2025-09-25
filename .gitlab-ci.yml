@@ -26,6 +26,7 @@ variables:
   swupdate_version: default
   test_function: swupdate
   separate_home_partition: disable
+  factory_reset: disable
   no_kernel: disable
 
 stages:
@@ -66,6 +67,7 @@ default:
     - if [ "${release}" = "bookworm" ]; then base_yaml="${base_yaml}:kas/opt/bookworm.yml"; fi
     - if [ "${release}" = "trixie" ]; then base_yaml="${base_yaml}:kas/opt/trixie.yml"; fi
     - if [ "${encrypt}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/encrypt-data.yml"; fi
+    - if [ "${factory_reset}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/factory-reset.yml"; fi
     - if [ "${watchdog}" = "disable" ]; then base_yaml="${base_yaml}:kas/opt/disable-watchdog.yml"; fi
     - if [ "${security_test}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/security_test.yml"; fi
     - if [ "${swupdate_version}" = "2022.12" ]; then base_yaml="${base_yaml}:kas/opt/swupdate-2022.12.yaml"; fi
@@ -269,6 +271,7 @@ build:qemu-amd64-swupdate:
     use_rt: disable
     targz: disable
     deploy: disable
+    factory_reset: enable
 
 # bullseye images
 build:iwg20m-bullseye:
