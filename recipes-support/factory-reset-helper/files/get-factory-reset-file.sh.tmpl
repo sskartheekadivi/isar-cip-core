@@ -1,0 +1,65 @@
+#!/bin/sh
+#
+# CIP Core, generic profile
+#
+# Copyright (c) Siemens AG, 2025
+#
+# Authors:
+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+#
+# SPDX-License-Identifier: MIT
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -d|--delete)
+            DELETE_MARKER=true
+            shift
+            ;;
+        -*)
+            echo "Unkown option '$1'"
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+
+marker="$(basename "${FACTORY_RESET_MARKER}")"
+marker_storage_device="${FACTORY_RESET_MARKER_STORAGE_DEVICE}"
+storage_mnt="$(findmnt  --first-only --output TARGET --noheadings "${marker_storage_device}")"
+tmp_mount=$(mktemp -d)
+# check for marker
+if [ -z "${storage_mnt}" ]; then
+    time_elapsed=0
+    while true; do
+        sleep 1
+        if [ -n "$(blkid --output value --match-tag TYPE "${marker_storage_device}")" ]; then
+            break
+        fi
+        time_elapsed="$((time_elapsed+1))"
+        if [ "${time_elapsed}" -ge 30 ]; then
+            break
+        fi
+    done
+    if ! mount -t "$(blkid --output value --match-tag TYPE "${marker_storage_device}")" \
+        "${marker_storage_device}" \
+        "${tmp_mount}"; then
+        if "$(type panic 2>/dev/null | grep -q  "is a function")"; then
+            panic "Can't mount ${marker_storage_device}!"
+        else
+            exit 1
+        fi
+    fi
+    storage_mnt="$tmp_mount"
+fi
+if [ -e "${storage_mnt}/${marker}" ]; then
+    echo "factory-reset was triggered"
+    # delete marker
+    if [ "$DELETE_MARKER" = "true" ]; then
+        rm "${storage_mnt}/${marker}"
+    fi
+fi
+if mountpoint -q "$tmp_mount"; then
+    umount "$tmp_mount"
+fi
+rmdir "$tmp_mount"

@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# CIP Core, generic profile
+#
+# Copyright (c) Siemens AG, 2025
+#
+# Authors:
+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+#
+# SPDX-License-Identifier: MIT
+
+usage() {
+    echo "$0 --create|--delete"
+}
+
+marker="$(basename "${FACTORY_RESET_MARKER}")"
+marker_storage_device="${FACTORY_RESET_MARKER_STORAGE_DEVICE}"
+
+tmp_mnt=$(mktemp -d)
+if [ -n "$marker_storage_device" ]; then
+    marker_mnt="$(findmnt  --first-only --output TARGET --noheadings "${marker_storage_device}")"
+    if [ -z "$marker_mnt" ]; then
+        mount "${marker_storage_device}" "$tmp_mnt"
+        marker_mnt="${tmp_mnt}"
+    fi
+fi
+
+if [ $# -eq 0 ]; then
+    usage
+fi
+if [ -z "${marker_mnt}" ]; then
+    marker_mnt=$(pwd)
+fi
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -c|--create)
+            touch "${marker_mnt}/${marker}"
+            shift
+            ;;
+        -d|--delete)
+            rm -f "${marker_mnt}/${marker}"
+            shift
+            ;;
+        -*)
+            echo "Unkown option '$1'"
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+if mountpoint -q "$tmp_mnt"; then
+    umount "$tmp_mnt"
+fi
+rmdir "$tmp_mnt"
