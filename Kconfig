@@ -34,6 +34,9 @@ config ARCH_RISCV64
 config HAS_SWUPDATE
 	bool
 
+config HAS_EFIVARS
+	bool
+
 choice
 	prompt "Target board"
 	default TARGET_QEMU_AMD64
@@ -42,11 +45,13 @@ config TARGET_QEMU_AMD64
 	bool "QEMU AMD64 (x86-64)"
 	select ARCH_AMD64
 	select HAS_SWUPDATE
+	select HAS_EFIVARS
 
 config TARGET_X86_UEFI
 	bool "Generic x86 machine booting via UEFI"
 	select ARCH_AMD64
 	select HAS_SWUPDATE
+	select HAS_EFIVARS
 
 config TARGET_QEMU_ARM64
 	bool "QEMU ARM64 (aarch64)"
@@ -281,6 +286,13 @@ config SEPARATE_HOME_PARTITION
 	  This adds a separate home partition to the build image instead of moving
 	  home to the var partition.
 
+config FACTORY_RESET
+	bool "Enable factory reset"
+	depends on IMAGE_SWUPDATE && (HAS_EFIVARS || !(IMAGE_FULL_ENCRYPTION || IMAGE_DATA_ENCRYPTION))
+	help
+	  This adds the necessary packages to request and execute a factory
+	  reset of the persistent partition. See also ./doc/README.factory-reset.md.
+
 config KAS_INCLUDE_DATA_ENCRYPTION
 	string
 	default "kas/opt/encrypt-data.yml" if IMAGE_DATA_ENCRYPTION
@@ -292,6 +304,10 @@ config KAS_INCLUDE_FULL_ENCRYPTION
 config KAS_INCLUDE_SEPARATE_HOME_PARTITION
 	string
 	default "kas/opt/separate-home-partition.yml" if SEPARATE_HOME_PARTITION
+
+config KAS_INCLUDE_FACTORY_RESET
+	string
+	default "kas/opt/factory-reset.yml" if FACTORY_RESET
 
 config WDOG_TIMEOUT
 	int "EFI Boot Guard watchdog timeout in seconds"
