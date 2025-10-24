@@ -50,6 +50,7 @@ ROOTFS_POSTPROCESS_COMMAND:remove:separate-home-part = " copy_home_to_immutable_
 copy_home_to_immutable_data() {
     IMMUTABLE_HOME_DIR="${ROOTFSDIR}${IMMUTABLE_DATA_DIR}"
     sudo mkdir -p "$IMMUTABLE_HOME_DIR"
+    sudo rm -rf "$IMMUTABLE_HOME_DIR/home"
     sudo mv ${ROOTFSDIR}/home "$IMMUTABLE_HOME_DIR/"
     # as the rootfs is read-only we need to create the link
     # between /var/home and /home during creation.
