@@ -103,7 +103,7 @@ comment "Kernel options"
 
 choice
 	prompt "CIP kernel version"
-	default KERNEL_6_1
+	default KERNEL_6_12
 
 config KERNEL_4_4
 	bool "Kernel 4.4.x-cip"
@@ -180,7 +180,7 @@ comment "Debian distribution options"
 
 choice
 	prompt "Debian Release"
-	default DEBIAN_BOOKWORM
+	default DEBIAN_TRIXIE
 
 config DEBIAN_BUSTER
 	bool "buster (10)"

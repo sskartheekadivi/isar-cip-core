@@ -12,7 +12,7 @@
 header:
   version: 14
 
-distro: cip-core-bookworm
+distro: cip-core-trixie
 target: cip-core-image
 
 build_system: isar
