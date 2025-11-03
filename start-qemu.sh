@@ -39,12 +39,15 @@ fi
 if [ -z "${DISTRO_RELEASE}" ]; then
 	if grep -s -q "DEBIAN_BUSTER: true" .config.yaml; then
 		DISTRO_RELEASE="buster"
+	elif grep -s -q "DEBIAN_BULLSEYE: true" .config.yaml; then
+		DISTRO_RELEASE="bullseye"
 	elif grep -s -q "DEBIAN_BOOKWORM: true" .config.yaml; then
 		DISTRO_RELEASE="bookworm"
 	elif grep -s -q "DEBIAN_TRIXIE: true" .config.yaml; then
 		DISTRO_RELEASE="trixie"
 	else
-		DISTRO_RELEASE="bullseye"
+		echo "No supported Debian release configured"
+		exit 1
 	fi
 fi
 
@@ -71,6 +74,9 @@ else
 		arch=arm
 	elif grep -s -q "TARGET_QEMU_RISCV64: true" .config.yaml; then
 		arch=riscv64
+	else
+		echo "No supported architecture configured"
+		exit 1
 	fi
 fi
 
