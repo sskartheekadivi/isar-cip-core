@@ -14,7 +14,7 @@
   variables:
     use_rt: disable
     base_yaml: "kas-cip.yml:kas/board/${target}.yml:kas/opt/reproducible.yml"
-    release: bookworm
+    release: trixie
     # This target include base + swupdate + secureboot + security
     extension: security
   stage: build
@@ -59,7 +59,7 @@
   variables:
     GIT_STRATEGY: none
     BASE_S3_URL: "https://s3.eu-central-1.amazonaws.com/download2.cip-project.org/cip-core"
-    release: bookworm
+    release: trixie
     extension: security
     image_base: "cip-core-image-cip-core"
   before_script:

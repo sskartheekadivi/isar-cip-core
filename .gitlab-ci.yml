@@ -14,7 +14,7 @@
 
 variables:
   GIT_STRATEGY: clone
-  release: bookworm
+  release: trixie
   extension: none
   use_rt: enable
   encrypt: disable
@@ -116,13 +116,6 @@ build:de0-nano-soc-base:
     target: de0-nano-soc
     dtb: socfpga_cyclone5_de0_nano_soc.dtb
 
-build:iwg20m-base:
-  extends:
-    - .build_base
-  variables:
-    target: iwg20m
-    dtb: r8a7743-iwg20d-q7-dbcm-ca.dtb
-
 build:hihope-rzg2m-base:
   extends:
     - .build_base
@@ -193,7 +186,14 @@ build:qemu-arm-base-kernelci:
     use_rt: disable
     #deploy_kernelci: enable
 
-# test
+build:qemu-riscv64:
+  extends:
+    - .build_base
+  variables:
+    target: qemu-riscv64
+    use_rt: disable
+
+# test images
 build:x86-uefi-test:
   extends:
     - .build_base
@@ -208,14 +208,6 @@ build:bbb-test:
     target: bbb
     extension: test
     dtb: am335x-boneblack.dtb
-
-build:iwg20m-test:
-  extends:
-    - .build_base
-  variables:
-    target: iwg20m
-    extension: test
-    dtb: r8a7743-iwg20d-q7-dbcm-ca.dtb
 
 build:hihope-rzg2m-test:
   extends:
@@ -257,7 +249,6 @@ build:qemu-riscv64-test-nokernel:
     - .build_base
   variables:
     target:  qemu-riscv64
-    release: trixie
     extension: test
     use_rt: disable
     no_kernel: enable
@@ -283,6 +274,43 @@ build:qemu-amd64-swupdate:
     extension: ebg-swu
     use_rt: disable
     factory_reset: enable
+
+build:ti-am62px-sk-secure-boot:
+  extends:
+    - .build_base
+  variables:
+    target: ti-am62px-sk
+    extension: ebg-secure-boot-snakeoil
+    use_rt: disable
+    encrypt: enable
+
+# bookworm images
+build:qemu-amd64-bookworm:
+  extends:
+    - .build_base
+  variables:
+    target: qemu-amd64
+    extension: security
+    security_test: enable
+    use_rt: disable
+    release: bookworm
+
+build:iwg20m-bookworm-test:
+  extends:
+    - .build_base
+  variables:
+    target: iwg20m
+    extension: test
+    dtb: r8a7743-iwg20d-q7-dbcm-ca.dtb
+    release: bookworm
+
+build:hihope-rzg2m-bookworm:
+  extends:
+    - .build_base
+  variables:
+    target: hihope-rzg2m
+    dtb: r8a774a1-hihope-rzg2m-ex.dtb
+    release: bookworm
 
 # bullseye images
 build:iwg20m-bullseye:
@@ -336,25 +364,6 @@ build:qemu-amd64-secure-boot-buster:
     base_yaml: "kas-cip.yml:kas/board/${target}.yml:kas/opt/5.10.yml"
     release: buster
     target: qemu-amd64
-    extension: ebg-secure-boot-snakeoil
-    use_rt: disable
-    encrypt: enable
-
-# trixie images
-build:qemu-riscv64:
-  extends:
-    - .build_base
-  variables:
-    target: qemu-riscv64
-    release: trixie
-    use_rt: disable
-
-build:ti-am62px-sk-secure-boot:
-  extends:
-    - .build_base
-  variables:
-    target: ti-am62px-sk
-    release: trixie
     extension: ebg-secure-boot-snakeoil
     use_rt: disable
     encrypt: enable
@@ -467,6 +476,16 @@ test:qemu-amd64-IEC:
   needs: ["build:qemu-amd64-base"]
   variables:
     target: qemu-amd64
+    test_function: IEC
+    iec_test_timeout: 40
+
+test:qemu-amd64-IEC-bookworm:
+  extends:
+   - .test-cip-core
+  needs: ["build:qemu-amd64-bookworm"]
+  variables:
+    target: qemu-amd64
+    release: bookworm
     test_function: IEC
     iec_test_timeout: 40
 
