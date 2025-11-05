@@ -1,5 +1,6 @@
 #!/usr/bin/make -f
 export DEB_CFLAGS_MAINT_APPEND  = -Wall  -Wno-format-security
+export DEB_BUILD_MAINT_OPTIONS=hardening=-branch
 
 LTP_CONFIGURE_FLAGS = --prefix=/opt/ltp
 
