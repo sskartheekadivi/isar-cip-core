@@ -18,6 +18,9 @@ DTB=$5
 REF=$6
 DEPLOY=$7
 
+# Reproducible Builds specific variables
+RB_BUILD_NUM=$8
+
 BASE_FILENAME=cip-core-image-cip-core-$RELEASE-$TARGET
 if [ "${EXTENSION}" != "none" ]; then
 	if [ "${EXTENSION}" = "security" ]; then
@@ -29,6 +32,10 @@ fi
 
 BASE_PATH=build/tmp/deploy/images/$TARGET/$BASE_FILENAME
 S3_TARGET=s3://download2.cip-project.org/cip-core/$REF/$TARGET/
+
+if [ -n "${RB_BUILD_NUM}" ]; then
+	S3_TARGET="${S3_TARGET}rb/${RB_BUILD_NUM}/"
+fi
 
 if [ "${NO_KERNEL}" = "enable" ]; then
 	__BASE_PATH=${BASE_PATH}
@@ -51,6 +58,12 @@ if [ -f "${BASE_PATH}.wic" ]; then
 	echo "Uploading artifacts..."
 	if [ "$DEPLOY" = "swu" ]; then
 		aws s3 cp --no-progress --acl public-read "${BASE_PATH}.swu" "${S3_TARGET}"
+	elif [ "$DEPLOY" = "wic-partitions" ]; then
+		# deploy individual wic partitions, helpful for RB tests
+		cd build/tmp/deploy/images/"$TARGET"
+		tar --ignore-failed-read -cJf "${BASE_FILENAME}-wic-partitions.tar.xz" "${BASE_FILENAME}".wic.p*
+		aws s3 cp --no-progress --acl public-read "${BASE_FILENAME}-wic-partitions.tar.xz" "${S3_TARGET}"
+		cd -
 	else
 		echo "Compressing $BASE_FILENAME.wic..."
 		xz -9 -k -T0 "${BASE_PATH}.wic"
@@ -100,4 +113,6 @@ DPKG_STATUS_FILENAME=${CI_JOB_NAME#build:}.dpkg_status
 if ! echo "$CI_JOB_NAME" | grep -q "$1"; then
 	DPKG_STATUS_FILENAME=${CI_JOB_NAME#build:}-$1.dpkg_status
 fi
-aws s3 cp --no-progress build/tmp/deploy/images/"$TARGET"/cip-core-image-*.dpkg_status s3://download.cip-project.org/cip-core/cve-checks/dpkg-status/"$DPKG_STATUS_FILENAME"
+if [ -z "${RB_BUILD_NUM}" ]; then
+	aws s3 cp --no-progress build/tmp/deploy/images/"$TARGET"/cip-core-image-*.dpkg_status s3://download.cip-project.org/cip-core/cve-checks/dpkg-status/"$DPKG_STATUS_FILENAME"
+fi
