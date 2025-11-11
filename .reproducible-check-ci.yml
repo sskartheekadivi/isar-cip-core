@@ -24,23 +24,30 @@
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $REPRODUCIBLE_BUILDS
   script:
+    - deploy_rb_artifacts() {
+        rb_build_num=$1;
+        for artifact in wic wic-partitions; do
+          scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} ${artifact} ${rb_build_num};
+        done;
+        if [ "${extension}" != "none" ]; then
+          scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} swu ${rb_build_num};
+        fi;
+      }
     # Build 1st time
     - !reference [.build_base, script]
-    - mv build/tmp/deploy/images/${target} image1
+    # Deploy .wic, .swu and wic partitions for build1
+    - deploy_rb_artifacts build1
     # clean
     - sudo rm -rf build/tmp
     - sudo rm -rf build/sstate-cache
     # Build 2nd time
     - !reference [.build_base, script]
-    - mv build/tmp/deploy/images/${target} image2
-    # Compress artifacts
-    - tar --ignore-failed-read -cJf image1.tar.xz image1/*.wic* image1/*.swu
-    - tar --ignore-failed-read -cJf image2.tar.xz image2/*.wic* image2/*.swu
+    # Deploy .wic, .swu and wic partitions for build2
+    - deploy_rb_artifacts build2
   artifacts:
     expire_in: 1 day
     paths:
       - scripts/repro-tests.sh
-      - image*.tar.xz
 
 .repro-test:
   image:
@@ -52,15 +59,37 @@
     - if: $CI_PIPELINE_SOURCE == "schedule" && $REPRODUCIBLE_BUILDS
   variables:
     GIT_STRATEGY: none
+    BASE_S3_URL: "https://s3.eu-central-1.amazonaws.com/download2.cip-project.org/cip-core"
     release: bookworm
     extension: security
+    image_base: "cip-core-image-cip-core"
   before_script:
-    - apt update && DEBIAN_FRONTEND=noninteractive apt install -y diffoscope
+    - apt update && DEBIAN_FRONTEND=noninteractive apt install -y diffoscope wget
   script:
-    - mkdir image1
-    - tar -xJf image1.tar.xz --strip-components=1 -C image1
-    - mkdir image2
-    - tar -xJf image2.tar.xz --strip-components=1 -C image2
+    - if [ "${extension}" = "security" ]; then
+        image_base="cip-core-image-security-cip-core";
+      fi
+    # Function to fetch artifacts for a build
+    - fetch_rb_artifacts() {
+        local build_num=$1;
+        local dir="image${build_num}";
+        local base_url="${BASE_S3_URL}/${CI_COMMIT_REF_SLUG}/${target}/rb/build${build_num}";
+
+        mkdir -p "$dir";
+        wget "${base_url}/${image_base}-${release}-${target}.wic.xz";
+        xz -d ${image_base}-${release}-${target}.wic.xz && mv ${image_base}-${release}-${target}.wic "$dir";
+
+        wget "${base_url}/${image_base}-${release}-${target}-wic-partitions.tar.xz";
+        tar -xJf ${image_base}-${release}-${target}-wic-partitions.tar.xz -C "$dir";
+        rm -f ${image_base}-${release}-${target}-wic-partitions.tar.xz;
+
+        if [ "${extension}" != "none" ]; then
+          wget "${base_url}/${image_base}-${release}-${target}.swu" && mv ${image_base}-${release}-${target}.swu "$dir";
+        fi;
+      }
+    # Fetch artifacts for both builds
+    - fetch_rb_artifacts 1
+    - fetch_rb_artifacts 2
     - ./scripts/repro-tests.sh --release ${release} --target ${target} --extension ${extension} image1 image2
   artifacts:
     when: always
@@ -108,24 +137,21 @@ test:qemu-amd64-repro-test:
     - .repro-test
   variables:
     target: qemu-amd64
-  dependencies:
-    - build:qemu-amd64-repro-build
+  needs: ["build:qemu-amd64-repro-build"]
 
 test:qemu-arm64-repro-test:
   extends:
     - .repro-test
   variables:
     target: qemu-arm64
-  dependencies:
-    - build:qemu-arm64-repro-build
+  needs: ["build:qemu-arm64-repro-build"]
 
 test:qemu-arm-repro-test:
   extends:
     - .repro-test
   variables:
     target: qemu-arm
-  dependencies:
-    - build:qemu-arm-repro-build
+  needs: ["build:qemu-arm-repro-build"]
 
 test:bbb-repro-test:
   extends:
@@ -133,13 +159,11 @@ test:bbb-repro-test:
   variables:
     target: bbb
     extension: "none"
-  dependencies:
-    - build:bbb-repro-build
+  needs: ["build:bbb-repro-build"]
 
 test:x86-uefi-repro-test:
   extends:
     - .repro-test
   variables:
     target: x86-uefi
-  dependencies:
-    - build:x86-uefi-repro-build
+  needs: ["build:x86-uefi-repro-build"]
