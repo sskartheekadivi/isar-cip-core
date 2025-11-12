@@ -18,6 +18,9 @@ SRC_URI = " \
    file://debian \
    "
 
+TEMPLATE_FILES = "debian/control.tmpl"
+TEMPLATE_VARS += "DEBIAN_STANDARDS_VERSION"
+
 do_prepare_build() {
         cp -R ${WORKDIR}/debian ${S}
         deb_add_changelog
