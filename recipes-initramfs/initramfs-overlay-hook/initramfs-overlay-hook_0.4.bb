@@ -1,7 +1,7 @@
 #
 # CIP Core, generic profile
 #
-# Copyright (c) Siemens AG, 2022 - 2024
+# Copyright (c) Siemens AG, 2022 - 2025
 #
 # Authors:
 #  Jan Kiszka <jan.kiszka@siemens.com>
@@ -33,13 +33,21 @@ INITRAMFS_OVERLAY_STORAGE_PATH ??= "/var/local"
 INITRAMFS_OVERLAY_STORAGE_DEVICE ??= "/dev/disk/by-label/var"
 
 # options to use for mounting INITRAMFS_OVERLAY_STORAGE_DEVICE
-INITRAMFS_OVERLAY_MOUNT_OPTION ??= "defaults,nodev,nosuid,noexec"
+INITRAMFS_OVERLAY_MOUNT_OPTIONS ??= "defaults,nodev,nosuid,noexec"
+
+python() {
+    # to be dropped end of 2027
+    legacy_var = d.getVar('INITRAMFS_OVERLAY_MOUNT_OPTION')
+    if legacy_var:
+        bb.warn("Legacy use of INITRAMFS_OVERLAY_MOUNT_OPTION detected. Migrate to INITRAMFS_OVERLAY_MOUNT_OPTIONS.")
+        d.setVar('INITRAMFS_OVERLAY_MOUNT_OPTIONS', legacy_var)
+}
 
 TEMPLATE_FILES += "local-bottom.tmpl"
 TEMPLATE_VARS += " INITRAMFS_OVERLAY_STORAGE_PATH \
     INITRAMFS_OVERLAY_PATHS \
     INITRAMFS_OVERLAY_STORAGE_DEVICE \
-    INITRAMFS_OVERLAY_MOUNT_OPTION \
+    INITRAMFS_OVERLAY_MOUNT_OPTIONS \
     INITRAMFS_OVERLAY_RECOVERY_SCRIPT"
 
 DEBIAN_DEPENDS .= ", awk, coreutils, util-linux, e2fsprogs"
