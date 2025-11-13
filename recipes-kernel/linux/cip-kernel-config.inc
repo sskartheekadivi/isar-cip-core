@@ -19,4 +19,4 @@ SRCREV_cip-kernel-config ?= "ba0204aa6c1c5a41dcb4fa1087b5ef5dd3ebf81f"
 
 do_fetch[vardeps] += "SRCREV_cip-kernel-config"
 
-KBUILD_DEPENDS:append = "${@', lzop' if d.getVar('USE_CIP_KERNEL_CONFIG') == '1' else ''}"
+KBUILD_DEPENDS:append = "${@', lzop, lz4' if d.getVar('USE_CIP_KERNEL_CONFIG') == '1' else ''}"
