@@ -33,10 +33,10 @@ if ! mountpoint -q "${rootmnt}${storage_mount_point}"; then
 		fi
 		;;
 	esac
-	if ! mount -t ${partition_fstype} \
-		 -o ${ovl_mount_option} \
-		 ${ovl_partition_device} \
-		 ${rootmnt}${storage_mount_point}; then
+	if ! mount -t "${partition_fstype}" \
+		 -o "${ovl_mount_option}" \
+		 "${ovl_partition_device}" \
+		 "${rootmnt}${storage_mount_point}"; then
 		panic "Can't mount ${storage_mount_point} partition - overlay will not work!"
 	fi
 fi
@@ -44,19 +44,19 @@ fi
 for ovl_lower_dir in ${ovl_lower_dirs}; do
 	# remove the first '/' and replace all '/' with '_'
 	# on variable $ovl_lower_dir
-	work_dir_name=$(awk -v var=$ovl_lower_dir \
+	work_dir_name=$(awk -v var="$ovl_lower_dir" \
 		'BEGIN{subvar=substr(var,2);gsub("/","_",subvar);print subvar}')
 
 	lower_dir=${rootmnt}${ovl_lower_dir}
 	upper_dir=${root_mount_storage}${ovl_lower_dir}
 	work_dir=${root_mount_storage}/.${work_dir_name}-atomic
 
-	mkdir -p ${upper_dir}
-	mkdir -p ${work_dir}
+	mkdir -p "${upper_dir}"
+	mkdir -p "${work_dir}"
 
 	if ! mount -t overlay \
-		   -o lowerdir=${lower_dir},upperdir=${upper_dir},workdir=${work_dir} \
-		   overlay ${lower_dir}; then
+		   -o lowerdir="${lower_dir}",upperdir="${upper_dir}",workdir="${work_dir}" \
+		   overlay "${lower_dir}"; then
 		panic "Can't mount overlay for '$ovl_lower_dir' !"
 	fi
 done
