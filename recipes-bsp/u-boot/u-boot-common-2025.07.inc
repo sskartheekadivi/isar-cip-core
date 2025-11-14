@@ -38,7 +38,7 @@ STATIC_KEYS_BUILD_DEPENDS = ", \
 STATIC_KEYS_BUILD_DEPENDS:append:buster   = ", pesign"
 STATIC_KEYS_BUILD_DEPENDS:append:bullseye = ", pesign"
 STATIC_KEYS_BUILD_DEPENDS:append:bookworm = ", pesign"
-STATIC_KEYS_DEPENDS = "secure-boot-secrets"
+STATIC_KEYS_DEPENDS = " secure-boot-secrets"
 
 SECURE_BOOT_BUILD_DEPENDS = "${STATIC_KEYS_BUILD_DEPENDS}"
 SECURE_BOOT_BUILD_DEPENDS:ftpm-stmm = ""
