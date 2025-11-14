@@ -1,0 +1,30 @@
+#
+# Copyright (c) Texas Instruments Incorporated, 2025
+#
+# Authors:
+#  Sai Sree Kartheek Adivi <s-adivi@ti.com>
+#
+# SPDX-License-Identifier: MIT
+#
+
+SRC_URI += " \
+    https://github.com/OP-TEE/optee_os/archive/${PV}.tar.gz;downloadfilename=optee-os-${PV}.tar.gz \
+    "
+
+SRC_URI[sha256sum] = "5222cd553f5edb69ae4ec7cb99b2bfec2c47a47c0be1865b49744701918e8b4d"
+
+S = "${WORKDIR}/optee_os-${PV}"
+
+OPTEE_NAME = "ti-k3"
+OPTEE_PLATFORM = "k3-am62px"
+OPTEE_EXTRA_BUILDARGS += " \
+	CFG_ARM64_core=y \
+	CFG_USER_TA_TARGETS=ta_arm64 \
+	TEE_IMPL_VERSION=${PV} \
+	CFG_TEE_CORE_LOG_LEVEL=1 \
+	"
+
+DEBIAN_BUILD_DEPENDS += ", device-tree-compiler, python3-cryptography:native"
+
+OPTEE_ENABLE_APPS ?= "1"
+OVERRIDES .= "${@':optee-with-apps' if bb.utils.to_boolean(d.getVar("OPTEE_ENABLE_APPS")) else ''}"
