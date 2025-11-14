@@ -104,6 +104,10 @@ config TARGET_TI_AM62PX_SK
 	bool "Texas Instruments AM62Px SK"
 	select ARCH_ARM64
 	select HAS_SWUPDATE
+	select HAS_SECURE_BOOT
+	select HAS_DISK_ENCRYPTION
+	select HAS_OPTEE
+	select FTPM_STMM
 
 endchoice
 

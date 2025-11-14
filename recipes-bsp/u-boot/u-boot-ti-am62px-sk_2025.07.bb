@@ -20,6 +20,7 @@ SRC_URI += " \
 	https://github.com/TexasInstruments/ti-linux-firmware/raw/refs/tags/${TI_FIRMWARE_PV}/ti-sysfw/ti-fs-firmware-am62px-hs-enc.bin;downloadfilename=ti-fs-firmware-am62px-hs-enc.bin;name=am62p-sysfw-enc-hs \
 	https://github.com/TexasInstruments/ti-linux-firmware/raw/refs/tags/${TI_FIRMWARE_PV}/ti-dm/am62pxx/ipc_echo_testb_mcu1_0_release_strip.xer5f;downloadfilename=ipc_echo_testb_mcu1_0_release_strip.xer5f;name=am62p-dm \
 	file://rules-${MACHINE} \
+	file://ti-extra.cfg \
 	file://0001-configs-KASLR-OPTEE-RNG-support-for-K3-devic.patch \
 	"
 
@@ -42,6 +43,8 @@ U_BOOT_CONFIG = "${U_BOOT_A53_CONFIG}"
 
 U_BOOT_BIN_INSTALL = "tiboot3-am62px-hs-fs-evm.bin tispl.bin u-boot.img"
 
+OVERRIDES .= ":ftpm-stmm"
+
 DEPENDS += "trusted-firmware-a-ti-k3 optee-os-ti-k3"
 DEBIAN_BUILD_DEPENDS =. "gcc-arm-linux-gnueabihf, \
     libssl-dev:native, libssl-dev, grub-common, \
@@ -56,4 +59,7 @@ do_prepare_build:append() {
     cp ${WORKDIR}/ipc_echo_testb_mcu1_0_release_strip.xer5f ${TI_LINUX_FIRMWARE}/ti-dm/am62pxx
 
     cp ${WORKDIR}/rules-${MACHINE} ${S}/debian/rules
+
+    sed -ni '/### TI extra config/q;p' ${S}/configs/${U_BOOT_CONFIG}
+    cat ${WORKDIR}/ti-extra.cfg >> ${S}/configs/${U_BOOT_CONFIG}
 }
