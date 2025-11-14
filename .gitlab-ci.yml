@@ -344,6 +344,18 @@ build:qemu-riscv64:
     targz: disable
     deploy: disable
 
+build:ti-am62px-sk-secure-boot:
+  extends:
+    - .build_base
+  variables:
+    target: ti-am62px-sk
+    release: trixie
+    extension: ebg-secure-boot-snakeoil
+    use_rt: disable
+    targz: disable
+    deploy: disable
+    encrypt: enable
+
 .test-cip-core:
   stage: test
   image: $CI_REGISTRY_IMAGE/lavacli
