@@ -11,6 +11,8 @@
 
 require recipes-initramfs/initramfs-hook/hook.inc
 
+RDEPENDS += "initramfs-cip-functions"
+
 DEBIAN_DEPENDS .= ", \
     cryptsetup, \
     awk, \
@@ -18,7 +20,8 @@ DEBIAN_DEPENDS .= ", \
     e2fsprogs, \
     tpm2-tools, \
     coreutils, \
-    uuid-runtime"
+    uuid-runtime, \
+    initramfs-cip-functions"
 
 CRYPT_BACKEND:buster = "clevis"
 CRYPT_BACKEND:bullseye = "clevis"
