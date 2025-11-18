@@ -11,7 +11,8 @@
 
 require recipes-initramfs/initramfs-hook/hook.inc
 
-DEBIAN_DEPENDS .= ", util-linux"
+RDEPENDS += "initramfs-cip-functions"
+DEBIAN_DEPENDS .= ", util-linux, initramfs-cip-functions"
 DEBIAN_CONFLICTS = "initramfs-verity-hook"
 
 SRC_URI += " \
