@@ -33,6 +33,8 @@ esac
 . /scripts/functions
 . /lib/cryptsetup/functions
 
+. /scripts/cip-initramfs-functions
+
 load_verity_env_from_cmdline()
 {
     local verity_opts
@@ -71,9 +73,13 @@ load_verity_env_from_cmdline()
     done
 }
 
+found_root=""
+scanned_partitions=""
+
 find_root_via_image_uuid()
 {
-    for part in ${partitions}; do
+    loc_partitions="$1"
+    for part in ${loc_partitions}; do
         if [ "$(blkid -p ${part} --match-types novfat -s USAGE -o value)" = "filesystem" ]; then
             verity_uuid=$(
                 veritysetup dump "${part}" --hash-offset "${HASH_OFFSET}" | \
@@ -99,7 +105,6 @@ find_root_via_image_uuid()
 # broken trust chain.
 echo "ROOT=/dev/null" >/conf/param.conf
 wait_for_udev 10
-
 load_verity_env_from_cmdline
 
 case "$ROOT" in
@@ -109,57 +114,17 @@ case "$ROOT" in
         found_root=$(blkid --list-one --output device --match-token "$ROOT")
         if [ -z "${found_root}" ]; then
             log_begin_msg "Waiting for ${ROOT}"
-            while true; do
-                sleep 1
-                time_elapsed="$(time_elapsed)"
-
-                found_root=$(blkid --list-one --output device --match-token "$ROOT")
-                if [ -n "${found_root}" ]; then
-                    log_end_msg 1
-                    break
-                fi
-                if [ "${time_elapsed}" -ge 30 ]; then
-                    log_end_msg 0
-                    break
-                fi
-            done
+            wait_30sec_for_condition find_root_by_part
         fi
         ;;
     "")
         # No Root device was given. Use veritysetup verify to search matching roots
         partitions="$(blkid -o device)"
-        find_root_via_image_uuid
+        find_root_via_image_uuid "$partitions"
         if [ -z "${found_root}" ]; then
             log_begin_msg "Waiting for IMAGE_UUID=${TARGET_IMAGE_UUID}"
             scanned_partitions="${partitions}"
-            while true; do
-                sleep 1
-                time_elapsed="$(time_elapsed)"
-
-                unset partitions
-                for part in $(blkid -o device); do
-                    unset found
-                    for scanned_part in ${scanned_partitions}; do
-                        if [ "${scanned_part}" = "${part}" ]; then
-                            found=1
-                            break
-                        fi
-                    done
-                    if [ -z "${found}" ]; then
-                        partitions="${partitions} ${part}"
-                    fi
-                done
-                find_root_via_image_uuid
-                if [ -n "${found_root}" ]; then
-                    log_end_msg 1
-                    break
-                fi
-                if [ "${time_elapsed}" -ge 30 ]; then
-                    log_end_msg 0
-                    break
-                fi
-                scanned_partitions="${scanned_partitions} ${partitions}"
-            done
+            wait_30sec_for_condition scan_for_partitions
         fi
         ;;
 esac
