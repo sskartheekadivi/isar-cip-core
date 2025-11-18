@@ -8,6 +8,7 @@
 #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
 #
 . /usr/share/factory-reset/reset-env
+
 target_devices="${INITRAMFS_FACTORY_RESET_DEVICES}"
 
 if /usr/sbin/get-factory-reset.sh --delete | grep -q "factory-reset"; then
@@ -27,9 +28,18 @@ if /usr/sbin/get-factory-reset.sh --delete | grep -q "factory-reset"; then
                 ;;
         esac
         if [ "$fs_type" = "luks" ]; then
-            target=$(find /dev/mapper -iname "*$label")
-            fs_type=$(get_fstype "${target}")
-            echo "luks device detected use $target"
+            if [ -n "${INITRAMFS_FACTORY_RESET_CLEAR_TPM}" ]; then
+                # after this the data on the encrypted partition
+                # is inaccessible
+                tpm2_clear
+                # with encryption the original fs_type is hidden
+                # use a variable from the reset-env to set it
+                fs_type="$INITRAMFS_FACTORY_RESET_LUKS_FORMAT_TYPE"
+            else
+                target=$(find /dev/mapper -iname "*$label")
+                fs_type=$(get_fstype "${target}")
+                echo "luks device detected use $target"
+            fi
         fi
         case ${fs_type} in
             ext*)
