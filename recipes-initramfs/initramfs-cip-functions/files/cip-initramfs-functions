@@ -1,0 +1,72 @@
+#!/bin/sh
+#
+# CIP Core, generic profile
+#
+# Copyright (c) Siemens AG, 2025
+#
+# Authors:
+#  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+#
+# SPDX-License-Identifier: MIT
+#
+
+# check condition by calling function given via argument 1
+# if the function does not return true(0) check again
+# every second for up to 30 seconds
+wait_30sec_for_condition() {
+    check_condition="$1"
+    if [ -z "$check_condition" ]; then
+        panic "Argument for function wait_30sec_for_condition is empty"
+        return 0
+    fi
+    time_elapsed=0
+    while true; do
+        sleep 1
+        time_elapsed="$((time_elapsed + 1))"
+        if "$check_condition" ; then
+            log_end_msg 1
+            break
+        fi
+        if [ "${time_elapsed}" -ge 30 ]; then
+            log_end_msg 0
+            break
+        fi
+    done
+}
+
+# check if the device "$ROOT" is valid
+find_root_by_part() {
+    found_root=$(blkid --list-one --output device --match-token "$ROOT")
+    if [ -n "${found_root}" ]; then
+        return 0
+    fi
+    return 1
+}
+
+# This function should be overridden by the user of scan_for_partitions
+find_root_via_image_uuid(){
+    :
+}
+
+# scan partitions for the root device defined by
+# the function find_root_via_image_uuid
+scan_for_partitions() {
+    for part in $(blkid -o device); do
+        unset found
+        for scanned_part in ${scanned_partitions}; do
+            if [ "${scanned_part}" = "${part}" ]; then
+                found=1
+                break
+            fi
+        done
+        if [ -z "${found}" ]; then
+            partitions="${partitions} ${part}"
+        fi
+    done
+    scanned_partitions="${scanned_partitions} ${partitions}"
+    find_root_via_image_uuid "$partitions"
+    if [ -n "${found_root}" ]; then
+        return 0
+    fi
+    return 1
+}
