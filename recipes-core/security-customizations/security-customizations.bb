@@ -20,10 +20,10 @@ SRC_URI = "file://postinst \
 DEPENDS = "customizations sshd-regen-keys"
 DEBIAN_DEPENDS = "customizations, sshd-regen-keys, libpam-google-authenticator, libpam-modules, libpam-runtime, auditd"
 
-# Package names based on the distro version
-DEBIAN_DEPENDS:append:buster = ", libpam-cracklib"
-DEBIAN_DEPENDS:append:bullseye = ", libpam-cracklib"
-DEBIAN_DEPENDS:append:bookworm = ", libpam-passwdqc"
+# Append PAM module dependencies for password strength enforcement based on the Debian version
+# - libpam-cracklib: Deprecated, but still supported in Debian Buster and Bullseye.
+# - libpam-passwdqc: Preferred for newer Debian releases (post-Bullseye).
+DEBIAN_DEPENDS:append = ", libpam-passwdqc | libpam-cracklib"
 
 do_install[cleandirs] += "${D}/etc/ssh/sshd_config.d/"
 do_install () {
