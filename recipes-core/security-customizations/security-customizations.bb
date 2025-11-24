@@ -25,6 +25,9 @@ DEBIAN_DEPENDS = "customizations, sshd-regen-keys, libpam-google-authenticator, 
 # - libpam-passwdqc: Preferred for newer Debian releases (post-Bullseye).
 DEBIAN_DEPENDS:append = ", libpam-passwdqc | libpam-cracklib"
 
+# Append systemd PAM package to limit concurrent sessions in Debian trixie
+DEBIAN_DEPENDS:append:trixie = ", libpam-systemd"
+
 do_install[cleandirs] += "${D}/etc/ssh/sshd_config.d/"
 do_install () {
     install -m 600 ${WORKDIR}/ssh-remote-session-term.conf ${D}/etc/ssh/sshd_config.d/
