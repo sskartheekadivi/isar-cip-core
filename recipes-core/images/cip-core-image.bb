@@ -15,7 +15,5 @@ DESCRIPTION = "CIP Core image"
 
 IMAGE_INSTALL += "customizations"
 
-IMAGE_INSTALL:append:factory-reset = "factory-reset-helper"
-
 CIP_IMAGE_OPTIONS ?= ""
 require ${CIP_IMAGE_OPTIONS}
