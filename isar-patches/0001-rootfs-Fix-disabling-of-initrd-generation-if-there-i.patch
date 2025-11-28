@@ -1,0 +1,39 @@
+From 1d31b8e84b8d802b7d2028112b10c7130f671fba Mon Sep 17 00:00:00 2001
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Sat, 29 Nov 2025 15:12:20 +0100
+Subject: [PATCH 1/2] rootfs: Fix disabling of initrd generation if there is a
+ custom one
+
+The variable is now called IMAGE_INITRD.
+
+Fixes: c3c4e72cbfc4 ("image: introduce IMAGE_INITRD, deprecate INITRD_IMAGE")
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ meta/classes/rootfs.bbclass | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/meta/classes/rootfs.bbclass b/meta/classes/rootfs.bbclass
+index 70d4bfb8..eb5645af 100644
+--- a/meta/classes/rootfs.bbclass
++++ b/meta/classes/rootfs.bbclass
+@@ -23,7 +23,7 @@ ROOTFS_INITRAMFS_GENERATOR_CMD = "${@ d.getVar('ROOTFS_INITRAMFS_GENERATOR_CMDLI
+ ROOTFS_INITRAMFS_GENERATOR_CMDLINE = "${@ initramfs_generator_cmdline(d)}"
+ ROOTFS_BASE_DISTRO ?= "${BASE_DISTRO}"
+ 
+-INITRD_IMAGE ?= ""
++IMAGE_INITRD ?= ""
+ 
+ # Features of the rootfs creation:
+ # available features are:
+@@ -33,7 +33,7 @@ INITRD_IMAGE ?= ""
+ # 'clean-log-files' - delete log files that are not owned by packages
+ # 'populate-systemd-preset' - enable systemd units according to systemd presets
+ # 'generate-initrd' - generate debian default initrd
+-ROOTFS_FEATURES += "${@ 'generate-initrd' if d.getVar('INITRD_IMAGE') == '' else ''}"
++ROOTFS_FEATURES += "${@ 'generate-initrd' if d.getVar('IMAGE_INITRD') == '' else ''}"
+ 
+ ROOTFS_APT_ARGS="install --yes -o Debug::pkgProblemResolver=yes"
+ 
+-- 
+2.51.0
+

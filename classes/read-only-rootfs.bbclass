@@ -10,7 +10,7 @@
 #
 
 INITRAMFS_RECIPE ?= "cip-core-initramfs"
-INITRD_IMAGE = "${INITRAMFS_RECIPE}-${DISTRO}-${MACHINE}.initrd.img"
+IMAGE_INITRD = "${INITRAMFS_RECIPE}"
 
 do_image_wic[depends] += "${INITRAMFS_RECIPE}:do_build"
 
