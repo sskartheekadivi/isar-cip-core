@@ -70,7 +70,7 @@ create_job_qemu () {
 		    -i "${job_dir}"/*.yml
 		if [ "$1" = "kernel-panic" ]; then
 			sed -e "s@kernel: C:BOOT1:linux.efi@Kernel panic - not syncing: sysrq triggered crash@g" \
-			    -e "s@#branch#@maintain-lava-artifact@g" \
+			    -e "s@\.swu@-broken.swu@" \
 			    -i "${job_dir}"/*.yml
 		else
 			sed -e "s@kernel: C:BOOT1:linux.efi@Can't open verity rootfs - continuing will lead to a broken trust chain!@g" \
@@ -175,15 +175,12 @@ create_job_qemu () {
 		cp $LAVA_TEMPLATES/secureboot_template.yml "${job_dir}/${1}_${2}.yml"
 	fi
 
-	if [ "$1" != "kernel-panic" ]; then
-		sed -i "s@#branch#@${COMMIT_BRANCH}@g" "${job_dir}"/*.yml
-	fi
-
 	if [ "$2" != "qemu-amd64" ]; then
 		add_firmware_artifacts "${job_dir}"/*.yml "$2"
 	fi
 
-	sed -e "s@#distribution#@${RELEASE}@g" \
+	sed -e "s@#branch#@${COMMIT_BRANCH}@g" \
+	    -e "s@#distribution#@${RELEASE}@g" \
 	    -e "s@#project_url#@${PROJECT_URL}@g" \
 	    -e "s@#architecture#@${2}@g" \
 	    -e "s@#imageargs#@${image_args[$2]}@g" \
@@ -198,7 +195,7 @@ create_job_qemu () {
 		sed -i "s@${RELEASE}-ovmf@${KEYS_DISTRO}-ovmf@g" "${job_dir}/${1}_mismatch_keys_${2}.yml"
 	fi
 
-	# Target is recieved from gitlab job in form of qemu-"architecture"
+	# Target is received from gitlab job in form of qemu-"architecture"
 	# In the template context field needs only architecture excepting the device type
 	local arch
 	arch=$(echo "$2" | cut -d '-' -f 2)

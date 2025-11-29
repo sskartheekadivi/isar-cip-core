@@ -21,7 +21,7 @@ variables:
   dtb: none
   deploy: disable
   deploy_kernelci: disable
-  build_swu_v2: disable
+  build_updates: disable
   swupdate_version: default
   test_function: swupdate
   separate_home_partition: disable
@@ -73,7 +73,7 @@ default:
     - echo "Building ${base_yaml}"
     - kas build ${base_yaml}
     - if [ "${deploy}" = "enable" ]; then scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} wic; fi
-    - if [ "${build_swu_v2}" = "enable" ]; then
+    - if [ "${build_updates}" = "enable" ]; then
           mkdir build/previous-image;
           if [ "${extension}" = "security" ] || [ "${extension}" = "ebg-secure-boot-snakeoil" ]; then
               cp build/tmp/deploy/images/${target}/*.verity build/previous-image;
@@ -82,8 +82,16 @@ default:
           fi;
           cp build/tmp/deploy/images/${target}/linux.efi build/previous-image;
           echo "PV = \"2.0\"" >> recipes-core/images/cip-core-image.inc;
+          kas build ${base_yaml}:kas/opt/delta-update.yml:kas/opt/kernel-panic.yml;
+          for swu in build/tmp/deploy/images/${target}/*.swu; do
+              mv "$swu" build/previous-image/$(basename "${swu%.swu}-broken.swu");
+          done;
+          echo "PV = \"2.1\"" >> recipes-core/images/cip-core-image.inc;
           kas build ${base_yaml}:kas/opt/delta-update.yml;
-          scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} swu;
+          for swu in build/previous-image/*-broken.swu; do
+              mv "$swu" build/tmp/deploy/images/${target};
+          done;
+          scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} swus;
       fi
     - if [ "${deploy_kernelci}" = "enable" ]; then scripts/deploy-kernelci.py ${release} ${target} ${extension} ${dtb}; fi
 
@@ -130,7 +138,7 @@ build:qemu-amd64-base:
     extension: security
     security_test: enable
     use_rt: disable
-    build_swu_v2: enable
+    build_updates: enable
     separate_home_partition: enable
     deploy: enable
 
@@ -151,7 +159,7 @@ build:qemu-arm64-base:
     extension: security
     security_test: enable
     use_rt: disable
-    build_swu_v2: enable
+    build_updates: enable
     separate_home_partition: enable
     deploy: enable
 
@@ -172,7 +180,7 @@ build:qemu-arm-base:
     extension: security
     security_test: enable
     use_rt: disable
-    build_swu_v2: enable
+    build_updates: enable
     separate_home_partition: enable
     deploy: enable
 
@@ -263,7 +271,7 @@ build:x86-uefi-secure-boot:
     use_rt: disable
     watchdog: disable
     security_test: enable
-    build_swu_v2: enable
+    build_updates: enable
     separate_home_partition: enable
     deploy: enable
 
