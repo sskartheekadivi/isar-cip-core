@@ -258,7 +258,7 @@ config KAS_INCLUDE_TESTING
 	string
 	default "kas/opt/test.yml" if IMAGE_TESTING
 
-if !KERNEL_4_4 && !KERNEL_4_19
+if !KERNEL_4_4 && !KERNEL_4_19 && !NO_KERNEL
 
 config IMAGE_SECURITY
 	bool "Security extensions"
