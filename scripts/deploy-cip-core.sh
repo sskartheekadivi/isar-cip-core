@@ -38,20 +38,11 @@ if [ -n "${RB_BUILD_NUM}" ]; then
 fi
 
 if [ "${NO_KERNEL}" = "enable" ]; then
-	__BASE_PATH=${BASE_PATH}
+	if [ -f "${BASE_PATH}.tar.gz" ]; then
+		echo "Rename from ${BASE_FILENAME}.tar.gz to ${BASE_FILENAME}-nokernel.tar.gz"
+		mv "${BASE_PATH}.tar.gz" "${BASE_PATH}-nokernel.tar.gz"
+	fi
 	BASE_PATH="${BASE_PATH}-nokernel"
-
-	echo "Rename from ${BASE_FILENAME}.* to ${BASE_FILENAME}-nokernel.*"
-
-	if [ -f "${__BASE_PATH}.tar.gz" ]; then
-		mv "${__BASE_PATH}.tar.gz" "${BASE_PATH}.tar.gz"
-	fi
-	if [ -f "${__BASE_PATH}.swu" ]; then
-		mv "${__BASE_PATH}.swu" "${BASE_PATH}.swu"
-	fi
-	if [ -f "${__BASE_PATH}.wic" ]; then
-		mv "${__BASE_PATH}.wic" "${BASE_PATH}.wic"
-	fi
 fi
 
 if [ -f "${BASE_PATH}.wic" ]; then
