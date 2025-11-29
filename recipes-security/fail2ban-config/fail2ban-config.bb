@@ -7,11 +7,10 @@
 #
 # SPDX-License-Identifier: MIT
 #
+
 DESCRIPTION = "Basic fail2ban config with systemd as backend"
 
 inherit dpkg-raw
-
-DPKG_ARCH = "all"
 
 SRC_URI += "file://systemd-defaults.conf"
 

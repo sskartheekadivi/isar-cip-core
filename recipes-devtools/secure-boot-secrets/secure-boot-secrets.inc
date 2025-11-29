@@ -11,7 +11,6 @@
 
 inherit dpkg-raw
 
-DPKG_ARCH = "all"
 PROVIDES += "secure-boot-secrets"
 DEBIAN_PROVIDES = "secure-boot-secrets"
 

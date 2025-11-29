@@ -12,7 +12,6 @@ inherit dpkg-raw
 
 DEBIAN_CONFLICTS = "home-fs"
 SRC_URI = "file://${BPN}.tmpfiles.tmpl"
-DPKG_ARCH = "all"
 
 IMMUTABLE_DATA_DIR ??= "/usr/share/immutable-data"
 TEMPLATE_VARS = "IMMUTABLE_DATA_DIR"

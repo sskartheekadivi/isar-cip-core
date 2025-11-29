@@ -9,7 +9,6 @@
 # SPDX-License-Identifier: MIT
 
 inherit dpkg-raw
-DPKG_ARCH = "all"
 
 PROVIDES = "swupdate-signer"
 DEBIAN_PROVIDES = "swupdate-signer"

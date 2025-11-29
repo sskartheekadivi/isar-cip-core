@@ -10,7 +10,6 @@
 
 inherit dpkg-raw
 
-DPKG_ARCH = "all"
 DESCRIPTION = "helper script to execute a factory reset"
 
 PROVIDES = "factory-reset-helper"

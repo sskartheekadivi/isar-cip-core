@@ -20,7 +20,6 @@ SRC_URI = " \
     file://${BPN}.tmpfiles.tmpl \
     file://95-disable-package-updates.preset \
 "
-DPKG_ARCH = "all"
 
 IMMUTABLE_DATA_DIR ??= "/usr/share/immutable-data"
 TEMPLATE_VARS = "IMMUTABLE_DATA_DIR"

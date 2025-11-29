@@ -11,7 +11,6 @@
 
 inherit dpkg-raw
 
-DPKG_ARCH = "all"
 DESCRIPTION = "helper functions for cip initramfs-tools extensions"
 
 SRC_URI += "file://cip-initramfs-functions"
