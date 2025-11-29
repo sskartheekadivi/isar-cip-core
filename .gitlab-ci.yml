@@ -19,7 +19,7 @@ variables:
   use_rt: enable
   encrypt: disable
   dtb: none
-  deploy: enable
+  deploy: disable
   deploy_kernelci: disable
   build_swu_v2: disable
   swupdate_version: default
@@ -132,6 +132,7 @@ build:qemu-amd64-base:
     use_rt: disable
     build_swu_v2: enable
     separate_home_partition: enable
+    deploy: enable
 
 build:qemu-amd64-base-kernelci:
   extends:
@@ -140,7 +141,6 @@ build:qemu-amd64-base-kernelci:
     target: qemu-amd64
     extension: kernelci
     use_rt: disable
-    deploy: disable
     #deploy_kernelci: enable
 
 build:qemu-arm64-base:
@@ -153,6 +153,7 @@ build:qemu-arm64-base:
     use_rt: disable
     build_swu_v2: enable
     separate_home_partition: enable
+    deploy: enable
 
 build:qemu-arm64-base-kernelci:
   extends:
@@ -161,7 +162,6 @@ build:qemu-arm64-base-kernelci:
     target: qemu-arm64
     extension: kernelci
     use_rt: disable
-    deploy: disable
     #deploy_kernelci: enable
 
 build:qemu-arm-base:
@@ -174,6 +174,7 @@ build:qemu-arm-base:
     use_rt: disable
     build_swu_v2: enable
     separate_home_partition: enable
+    deploy: enable
 
 build:qemu-arm-base-kernelci:
   extends:
@@ -182,7 +183,6 @@ build:qemu-arm-base-kernelci:
     target: qemu-arm
     extension: kernelci
     use_rt: disable
-    deploy: disable
     #deploy_kernelci: enable
 
 # test
@@ -265,6 +265,7 @@ build:x86-uefi-secure-boot:
     security_test: enable
     build_swu_v2: enable
     separate_home_partition: enable
+    deploy: enable
 
 build:qemu-amd64-swupdate:
   extends:
@@ -273,7 +274,6 @@ build:qemu-amd64-swupdate:
     target: qemu-amd64
     extension: ebg-swu
     use_rt: disable
-    deploy: disable
     factory_reset: enable
 
 # bullseye images
@@ -302,7 +302,6 @@ build:qemu-amd64-secure-boot-bullseye:
     target: qemu-amd64
     extension: ebg-secure-boot-snakeoil
     use_rt: disable
-    deploy: disable
     swupdate_version: "2022.12"
 
 # buster images
@@ -331,7 +330,6 @@ build:qemu-amd64-secure-boot-buster:
     target: qemu-amd64
     extension: ebg-secure-boot-snakeoil
     use_rt: disable
-    deploy: disable
     encrypt: enable
 
 # trixie images
@@ -342,7 +340,6 @@ build:qemu-riscv64:
     target: qemu-riscv64
     release: trixie
     use_rt: disable
-    deploy: disable
 
 build:ti-am62px-sk-secure-boot:
   extends:
@@ -352,7 +349,6 @@ build:ti-am62px-sk-secure-boot:
     release: trixie
     extension: ebg-secure-boot-snakeoil
     use_rt: disable
-    deploy: disable
     encrypt: enable
 
 .test-cip-core:
