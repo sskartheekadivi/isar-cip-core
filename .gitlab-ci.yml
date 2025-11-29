@@ -18,7 +18,6 @@ variables:
   extension: none
   use_rt: enable
   encrypt: disable
-  targz: enable
   dtb: none
   deploy: enable
   deploy_kernelci: disable
@@ -60,7 +59,6 @@ default:
   script:
     - if [ "${use_rt}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/rt.yml"; fi
     - if [ "${extension}" != "none" ]; then base_yaml="${base_yaml}:kas/opt/${extension}.yml"; fi
-    - if [ "${targz}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/targz.yml"; fi
     - if [ "${separate_home_partition}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/separate-home-partition.yml"; fi
     - if [ "${release}" = "buster" ]; then base_yaml="${base_yaml}:kas/opt/buster.yml"; fi
     - if [ "${release}" = "bullseye" ]; then base_yaml="${base_yaml}:kas/opt/bullseye.yml"; fi
@@ -71,7 +69,7 @@ default:
     - if [ "${watchdog}" = "disable" ]; then base_yaml="${base_yaml}:kas/opt/disable-watchdog.yml"; fi
     - if [ "${security_test}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/security_test.yml"; fi
     - if [ "${swupdate_version}" = "2022.12" ]; then base_yaml="${base_yaml}:kas/opt/swupdate-2022.12.yaml"; fi
-    - if [ "${no_kernel}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/no_kernel.yml"; fi
+    - if [ "${no_kernel}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/no_kernel.yml:kas/opt/targz.yml"; fi
     - echo "Building ${base_yaml}"
     - kas build ${base_yaml}
     - if [ "${deploy}" = "enable" ]; then scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} wic; fi
@@ -263,7 +261,6 @@ build:x86-uefi-secure-boot:
     target: x86-uefi
     extension: security
     use_rt: disable
-    targz: disable
     watchdog: disable
     security_test: enable
     build_swu_v2: enable
@@ -276,7 +273,6 @@ build:qemu-amd64-swupdate:
     target: qemu-amd64
     extension: ebg-swu
     use_rt: disable
-    targz: disable
     deploy: disable
     factory_reset: enable
 
@@ -306,7 +302,6 @@ build:qemu-amd64-secure-boot-bullseye:
     target: qemu-amd64
     extension: ebg-secure-boot-snakeoil
     use_rt: disable
-    targz: disable
     deploy: disable
     swupdate_version: "2022.12"
 
@@ -336,7 +331,6 @@ build:qemu-amd64-secure-boot-buster:
     target: qemu-amd64
     extension: ebg-secure-boot-snakeoil
     use_rt: disable
-    targz: disable
     deploy: disable
     encrypt: enable
 
@@ -348,7 +342,6 @@ build:qemu-riscv64:
     target: qemu-riscv64
     release: trixie
     use_rt: disable
-    targz: disable
     deploy: disable
 
 build:ti-am62px-sk-secure-boot:
@@ -359,7 +352,6 @@ build:ti-am62px-sk-secure-boot:
     release: trixie
     extension: ebg-secure-boot-snakeoil
     use_rt: disable
-    targz: disable
     deploy: disable
     encrypt: enable
 
