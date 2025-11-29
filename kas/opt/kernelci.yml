@@ -10,7 +10,10 @@
 #
 # SPDX-License-Identifier: MIT
 #
+
 header:
   version: 14
+  includes:
+    - kas/opt/targz.yml
 
 target: cip-core-image-kernelci
