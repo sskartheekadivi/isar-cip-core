@@ -47,9 +47,10 @@ clean_up () {
 
 # This method is called only for arm64 and arm targets while building job definitions
 add_firmware_artifacts () {
-	sed -i "s@#Firmware#@firmware:@g" "$1"
-	sed -i "s@#Firmware_args#@image_arg: '-bios {firmware}'@g" "$1"
-	sed -i "s@#Firmware_url#@url: ${PROJECT_URL}/${COMMIT_BRANCH}/${2}/firmware.bin@g" "$1"
+	sed -e "s@#Firmware#@firmware:@g" \
+	    -e "s@#Firmware_args#@image_arg: '-bios {firmware}'@g" \
+	    -e "s@#Firmware_url#@url: ${PROJECT_URL}/${COMMIT_BRANCH}/${2}/firmware.bin@g" \
+	    -i "$1"
 }
 
 # This method creates LAVA job definitions for QEMU amd64, arm64 and armhf
@@ -64,14 +65,17 @@ create_job_qemu () {
 
 	elif [ "$1" = "kernel-panic" ] || [ "$1" = "initramfs-crash" ]; then
 		cp $LAVA_TEMPLATES/swupdate_template.yml "${job_dir}/${1}.yml"
-		sed -i "s@software update testing@${1}_rollback_testing@g" "${job_dir}"/*.yml
-		sed -i -e "s@#updatestate#@3@g" -e "s@) = 2@) = 3@g" "${job_dir}"/*.yml
+		sed -e "s@software update testing@${1}_rollback_testing@g" \
+		    -e "s@#updatestate#@3@g" -e "s@) = 2@) = 3@g" \
+		    -i "${job_dir}"/*.yml
 		if [ "$1" = "kernel-panic" ]; then
-			sed -i "s@kernel: C:BOOT1:linux.efi@Kernel panic - not syncing: sysrq triggered crash@g" "${job_dir}"/*.yml
-			sed -i "s@#branch#@maintain-lava-artifact@g" "${job_dir}"/*.yml
+			sed -e "s@kernel: C:BOOT1:linux.efi@Kernel panic - not syncing: sysrq triggered crash@g" \
+			    -e "s@#branch#@maintain-lava-artifact@g" \
+			    -i "${job_dir}"/*.yml
 		else
-			sed -i "s@kernel: C:BOOT1:linux.efi@Can't open verity rootfs - continuing will lead to a broken trust chain!@g" "${job_dir}"/*.yml
-			sed -i "s@echo software update is successful!!@dd if=/dev/urandom of=/dev/sda5 bs=512 count=1@g" "${job_dir}"/*.yml
+			sed -e "s@kernel: C:BOOT1:linux.efi@Can't open verity rootfs - continuing will lead to a broken trust chain!@g" \
+			    -e "s@echo software update is successful!!@dd if=/dev/urandom of=/dev/sda5 bs=512 count=1@g" \
+			    -i "${job_dir}"/*.yml
 		fi
 	elif [ "$1" = "secure-boot-unsigned-kernel" ]; then
 		cp $LAVA_TEMPLATES/secureboot_negative_test.yml "${job_dir}/${1}_unsigned_kernel_${2}.yml"
@@ -79,16 +83,18 @@ create_job_qemu () {
 		sed -e '/#POSTPROCESS_STEPS#/ {' -e 'r secureboot_unsigned_kernel_steps.yml' -e 'd' -e '}' -i "${job_dir}/${1}_unsigned_kernel_${2}.yml"
 		cd -
 		if [ "$2" = "qemu-amd64" ]; then
-			sed -i "s@#END_MONITOR#@Access Denied@g" "${job_dir}/${1}_unsigned_kernel_${2}.yml"
-			sed -i "s@#START_MONITOR#@Cannot load specified kernel image@g" "${job_dir}/${1}_unsigned_kernel_${2}.yml"
-			sed -i "s@#ARTIFACT#@linux@g" "${job_dir}/${1}_unsigned_kernel_${2}.yml"
+			sed -e "s@#END_MONITOR#@Access Denied@g" \
+			    -e "s@#START_MONITOR#@Cannot load specified kernel image@g" \
+			    -e "s@#ARTIFACT#@linux@g" \
+			    -i "${job_dir}/${1}_unsigned_kernel_${2}.yml"
 		fi
 
 		if [ "$2" = "qemu-arm64" ] || [ "$2" = "qemu-arm" ]; then
-			sed -i "s@sda@vda@g" "${job_dir}/${1}_unsigned_kernel_${2}.yml"
-			sed -i "s@#END_MONITOR#@Application failed@g" "${job_dir}/${1}_unsigned_kernel_${2}.yml"
-			sed -i "s@#START_MONITOR#@Image not authenticated@g" "${job_dir}/${1}_unsigned_kernel_${2}.yml"
-			sed -i "s@#ARTIFACT#@linux@g" "${job_dir}/${1}_unsigned_kernel_${2}.yml"
+			sed -e "s@sda@vda@g" \
+			    -e "s@#END_MONITOR#@Application failed@g" \
+			    -e "s@#START_MONITOR#@Image not authenticated@g" \
+			    -e "s@#ARTIFACT#@linux@g" \
+			    -i "${job_dir}/${1}_unsigned_kernel_${2}.yml"
 		fi
 	elif [ "$1" = "secure-boot-unsigned-bootloader" ]; then
 		cp $LAVA_TEMPLATES/secureboot_negative_test.yml "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
@@ -97,17 +103,18 @@ create_job_qemu () {
 		cd -
 
 		if [ "$2" = "qemu-amd64" ]; then
-			sed -i "s@#END_MONITOR#@BdsDxe: failed to load Boot@g" "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
-			sed -i "s@#START_MONITOR#@Access Denied@g" "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
-			sed -i "s@#ARTIFACT#@bootloader@g" "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
+			sed -e "s@#END_MONITOR#@BdsDxe: failed to load Boot@g" \
+			    -e "s@#START_MONITOR#@Access Denied@g" \
+			    -e "s@#ARTIFACT#@bootloader@g" \
+			    -i "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
 		fi
 
 		if [ "$2" = "qemu-arm64" ] || [ "$2" = "qemu-arm" ]; then
-			sed -i "s@sda@vda@g" "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
-
-			sed -i "s@#END_MONITOR#@EFI Boot failed!@g" "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
-			sed -i "s@#START_MONITOR#@Image not authenticated@g" "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
-			sed -i "s@#ARTIFACT#@bootloader@g" "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
+			sed -e "s@sda@vda@g" \
+			    -e "s@#END_MONITOR#@EFI Boot failed!@g" \
+			    -e "s@#START_MONITOR#@Image not authenticated@g" \
+			    -e "s@#ARTIFACT#@bootloader@g" \
+			    -i "${job_dir}/${1}_unsigned_bootloader_${2}.yml"
 		fi
 
 		if [ "$2" = "qemu-arm64" ]; then
@@ -122,9 +129,10 @@ create_job_qemu () {
 		sed -e '/#POSTPROCESS_STEPS#/ {' -e 'r secureboot_corrupt_rootfs_steps.yml' -e 'd' -e '}' -i "${job_dir}/${1}_corrupt_rootfs_${2}.yml"
 		cd -
 
-		sed -i "s@#END_MONITOR#@reboot: Restarting system with command 'dm-verity device corrupted'@g" "${job_dir}/${1}_corrupt_rootfs_${2}.yml"
-		sed -i "s@#START_MONITOR#@EFI stub: UEFI Secure Boot is enabled.@g" "${job_dir}/${1}_corrupt_rootfs_${2}.yml"
-		sed -i "s@#ARTIFACT#@rootfs@g" "${job_dir}/${1}_corrupt_rootfs_${2}.yml"
+		sed -e "s@#END_MONITOR#@reboot: Restarting system with command 'dm-verity device corrupted'@g" \
+		    -e "s@#START_MONITOR#@EFI stub: UEFI Secure Boot is enabled.@g" \
+		    -e "s@#ARTIFACT#@rootfs@g" \
+		    -i "${job_dir}/${1}_corrupt_rootfs_${2}.yml"
 
 		if [ "$2" = "qemu-arm64" ]; then
 			sed -i "s@bootx64.efi@bootaa64.efi@g" "${job_dir}/${1}_corrupt_rootfs_${2}.yml"
@@ -136,10 +144,11 @@ create_job_qemu () {
 		if [ "$2" = "qemu-amd64" ]; then
 			cp $LAVA_TEMPLATES/secureboot_negative_test.yml "${job_dir}/${1}_mismatch_keys_${2}.yml"
 
-			sed -i "s@#END_MONITOR#@BdsDxe: failed to load Boot@g" "${job_dir}/${1}_mismatch_keys_${2}.yml"
-			sed -i "s@#START_MONITOR#@Access Denied@g" "${job_dir}/${1}_mismatch_keys_${2}.yml"
-			sed -i "s@#ARTIFACT#@keys@g" "${job_dir}/${1}_mismatch_keys_${2}.yml"
-			sed -i "s@#POSTPROCESS_STEPS#@- echo 'no postprocess steps'@g" "${job_dir}/${1}_mismatch_keys_${2}.yml"
+			sed -e "s@#END_MONITOR#@BdsDxe: failed to load Boot@g" \
+			    -e "s@#START_MONITOR#@Access Denied@g" \
+			    -e "s@#ARTIFACT#@keys@g" \
+			    -e "s@#POSTPROCESS_STEPS#@- echo 'no postprocess steps'@g" \
+			    -i "${job_dir}/${1}_mismatch_keys_${2}.yml"
 		fi
 	elif [ "$1" = "swupdate-corrupt-swu" ]; then
 		cp $LAVA_TEMPLATES/swupdate_negative_test.yml "${job_dir}/${1}_corrupt_swu_${2}.yml"
@@ -174,8 +183,11 @@ create_job_qemu () {
 		add_firmware_artifacts "${job_dir}"/*.yml "$2"
 	fi
 
-	sed -i -e "s@#distribution#@${RELEASE}@g" -e "s@#project_url#@${PROJECT_URL}@g" "${job_dir}"/*.yml
-	sed -i -e "s@#architecture#@${2}@g" -e "s@#imageargs#@${image_args[$2]}@g" "${job_dir}"/*.yml
+	sed -e "s@#distribution#@${RELEASE}@g" \
+	    -e "s@#project_url#@${PROJECT_URL}@g" \
+	    -e "s@#architecture#@${2}@g" \
+	    -e "s@#imageargs#@${image_args[$2]}@g" \
+	    -i "${job_dir}"/*.yml
 
 	if [ "$1" = "secure-boot-mismatch-keys" ]; then
 		if [ "${RELEASE}" = "trixie" ]; then
@@ -216,8 +228,11 @@ create_job_mcom () {
 		grep -A 16 "# TEST BLOCK 2" "$LAVA_TEMPLATES/$1_template.yml" >> "${job_dir}/${1}_${2}.yml"
 		sed -i -e "s@#updatestate#@2@g" -e "s@overlay-1.1.1.4@overlay-2.1.1.4@g" "${job_dir}/${1}_${2}.yml"
 	fi
-	sed -i -e "s@#test_function#@${1}@g" -e "s@#branch#@${COMMIT_BRANCH}@g" "${job_dir}/${1}_${2}.yml"
-	sed -i -e "s@#distribution#@${RELEASE}@g" -e "s@#project_url#@${PROJECT_URL}@g" "${job_dir}/${1}_${2}.yml"
+	sed -e "s@#test_function#@${1}@g" \
+	    -e "s@#branch#@${COMMIT_BRANCH}@g" \
+	    -e "s@#distribution#@${RELEASE}@g" \
+	    -e "s@#project_url#@${PROJECT_URL}@g" \
+	    -i "${job_dir}/${1}_${2}.yml"
 }
 
 # This method attaches SQUAD watch job to the submitted LAVA job
