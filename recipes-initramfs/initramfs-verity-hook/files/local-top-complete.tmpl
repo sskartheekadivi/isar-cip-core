@@ -122,7 +122,7 @@ case "$ROOT" in
         partitions="$(blkid -o device)"
         find_root_via_image_uuid "$partitions"
         if [ -z "${found_root}" ]; then
-            log_begin_msg "Waiting for IMAGE_UUID=${TARGET_IMAGE_UUID}"
+            log_begin_msg "Waiting for disk with verity header UUID=${UUID}"
             scanned_partitions="${partitions}"
             wait_30sec_for_condition scan_for_partitions
         fi
