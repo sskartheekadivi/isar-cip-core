@@ -29,7 +29,7 @@
           scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} ${artifact} ${rb_build_num};
         done;
         if [ "${extension}" != "none" ]; then
-          scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} swu ${rb_build_num};
+          scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} swus ${rb_build_num};
         fi;
       }
     # Build 1st time
