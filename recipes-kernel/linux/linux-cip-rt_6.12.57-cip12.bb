@@ -1,1 +1,0 @@
-linux-cip_6.12.57-cip12.bb
