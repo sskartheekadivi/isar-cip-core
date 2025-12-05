@@ -80,7 +80,6 @@ run_diffoscope() {
     artifacts2_dir="$3"
     label=""
     fstype=""
-    res=0
 
     # Get partition label and filesystem type
     label=$(blkid -s LABEL -o value "${artifacts1_dir}"/"${file}" || true)
@@ -95,10 +94,7 @@ run_diffoscope() {
         echo "${file}($label,$fstype): ${GREEN}Reproducible${NC}" | tee -a diffoscope_output.txt
     else
         echo "${file}($label,$fstype): ${RED}Not-Reproducible${NC}" | tee -a diffoscope_output.txt
-        res=1
     fi
-
-    return $res
 }
 
 # compare swu file
@@ -108,9 +104,8 @@ if [ -f "${artifacts1}/${swu_file}" ] && [ -f "${artifacts2}/${swu_file}" ]; the
 	swu1_sha256sum=$(sha256sum "${artifacts1}/${IMAGE_BASE}-${RELEASE}-${TARGET}.swu" | awk '{ print $1 }')
 	swu2_sha256sum=$(sha256sum "${artifacts2}/${IMAGE_BASE}-${RELEASE}-${TARGET}.swu" | awk '{ print $1 }')
 	if [ "$swu1_sha256sum" != "$swu2_sha256sum" ]; then
-		if ! run_diffoscope "$swu_file" "$artifacts1" "$artifacts2"; then
-			res_swu=1
-		fi
+		run_diffoscope "$swu_file" "$artifacts1" "$artifacts2"
+		res_swu=1
 	else
 		echo "${IMAGE_BASE}-${RELEASE}-${TARGET}.swu: ${GREEN}Reproducible${NC}" | tee -a diffoscope_output.txt
 	fi
