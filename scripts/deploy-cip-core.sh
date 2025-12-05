@@ -49,7 +49,9 @@ if [ -f "${BASE_PATH}.wic" ]; then
 	echo "Uploading artifacts..."
 	if [ "$DEPLOY" = "swus" ]; then
 		aws s3 cp --no-progress --acl public-read "${BASE_PATH}.swu" "${S3_TARGET}"
-		aws s3 cp --no-progress --acl public-read "${BASE_PATH}-broken.swu" "${S3_TARGET}"
+		if [ -f "${BASE_PATH}-broken.swu" ]; then
+			aws s3 cp --no-progress --acl public-read "${BASE_PATH}-broken.swu" "${S3_TARGET}"
+		fi
 	elif [ "$DEPLOY" = "wic-partitions" ]; then
 		# deploy individual wic partitions, helpful for RB tests
 		cd build/tmp/deploy/images/"$TARGET"
