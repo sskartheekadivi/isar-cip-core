@@ -20,7 +20,6 @@ variables:
   encrypt: disable
   dtb: none
   deploy: disable
-  deploy_kernelci: disable
   build_updates: disable
   swupdate_version: default
   test_function: swupdate
@@ -93,7 +92,6 @@ default:
           done;
           scripts/deploy-cip-core.sh ${release} ${target} ${extension} ${no_kernel} ${dtb} ${CI_COMMIT_REF_SLUG} swus;
       fi
-    - if [ "${deploy_kernelci}" = "enable" ]; then scripts/deploy-kernelci.py ${release} ${target} ${extension} ${dtb}; fi
 
 # base image
 build:x86-uefi-base:
@@ -135,15 +133,6 @@ build:qemu-amd64-base:
     separate_home_partition: enable
     deploy: enable
 
-build:qemu-amd64-base-kernelci:
-  extends:
-    - .build_base
-  variables:
-    target: qemu-amd64
-    extension: kernelci
-    use_rt: disable
-    #deploy_kernelci: enable
-
 build:qemu-arm64-base:
   extends:
     - .build_base
@@ -156,15 +145,6 @@ build:qemu-arm64-base:
     separate_home_partition: enable
     deploy: enable
 
-build:qemu-arm64-base-kernelci:
-  extends:
-    - .build_base
-  variables:
-    target: qemu-arm64
-    extension: kernelci
-    use_rt: disable
-    #deploy_kernelci: enable
-
 build:qemu-arm-base:
   extends:
     - .build_base
@@ -176,15 +156,6 @@ build:qemu-arm-base:
     build_updates: enable
     separate_home_partition: enable
     deploy: enable
-
-build:qemu-arm-base-kernelci:
-  extends:
-    - .build_base
-  variables:
-    target: qemu-arm
-    extension: kernelci
-    use_rt: disable
-    #deploy_kernelci: enable
 
 build:qemu-riscv64:
   extends:
