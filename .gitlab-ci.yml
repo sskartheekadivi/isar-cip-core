@@ -294,6 +294,7 @@ build:qemu-amd64-bookworm:
     security_test: enable
     use_rt: disable
     release: bookworm
+    deploy: enable
 
 build:iwg20m-bookworm-test:
   extends:
