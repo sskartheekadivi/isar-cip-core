@@ -10,8 +10,7 @@
 #
 
 inherit deploy-firmware
-
-require recipes-bsp/trusted-firmware-a/trusted-firmware-a-custom.inc
+inherit trusted-firmware-a
 
 SRC_URI += "https://github.com/TrustedFirmware-A/trusted-firmware-a/archive/refs/tags/v${PV}.tar.gz;downloadfilename=trusted-firmware-a-v${PV}.tar.gz"
 SRC_URI[sha256sum] = "28bc15daeeed000ecd30819ecc4851bf9ffc2d33e1d4553a71985c17f47a999e"

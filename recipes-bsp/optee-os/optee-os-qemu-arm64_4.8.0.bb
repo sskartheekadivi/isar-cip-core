@@ -9,5 +9,6 @@
 # SPDX-License-Identifier: MIT
 #
 
-require recipes-bsp/optee-os/optee-os-custom.inc
+inherit optee-os
+
 require optee-os-qemu-arm64_${PV}.inc

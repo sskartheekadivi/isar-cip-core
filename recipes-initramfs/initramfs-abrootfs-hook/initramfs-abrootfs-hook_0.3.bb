@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-require recipes-initramfs/initramfs-hook/hook.inc
+inherit initramfs-hook
 
 RDEPENDS += "initramfs-cip-functions"
 DEBIAN_DEPENDS .= ", util-linux, initramfs-cip-functions"

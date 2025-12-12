@@ -9,7 +9,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-require recipes-bsp/u-boot/u-boot-custom.inc
+inherit u-boot
 
 FILESPATH:append := ":${FILE_DIRNAME}/files"
 

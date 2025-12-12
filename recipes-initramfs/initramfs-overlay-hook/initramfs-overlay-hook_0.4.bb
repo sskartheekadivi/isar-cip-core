@@ -10,7 +10,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-require recipes-initramfs/initramfs-hook/hook.inc
+inherit initramfs-hook
 
 INITRAMFS_OVERLAY_RECOVERY_SCRIPT ??= "overlay_recovery_action.script"
 

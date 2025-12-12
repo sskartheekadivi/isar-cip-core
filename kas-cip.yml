@@ -22,16 +22,13 @@ repos:
 
   isar:
     url: https://github.com/ilbers/isar.git
-    commit: 2efd5d4ca3b4abf2386fe0089594029becdf2801
+    commit: 0174bd2260f1dec2b40deffa89f8028fca7b1557
     layers:
       meta:
     patches:
       p1:
         repo: cip-core
-        path: isar-patches/0001-rootfs-Fix-disabling-of-initrd-generation-if-there-i.patch
-      p2:
-        repo: cip-core
-        path: isar-patches/0002-rootfs-Restore-previous-naming-scheme-in-INITRD_DEPL.patch
+        path: isar-patches/0001-initramfs-Align-custom-built-image-name-to-standard-.patch
 
 bblayers_conf_header:
   standard: |

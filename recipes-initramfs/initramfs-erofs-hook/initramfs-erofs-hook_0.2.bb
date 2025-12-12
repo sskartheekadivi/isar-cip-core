@@ -9,6 +9,6 @@
 # SPDX-License-Identifier: MIT
 #
 
-require recipes-initramfs/initramfs-hook/hook.inc
+inherit initramfs-hook
 
 HOOK_ADD_MODULES = "erofs"

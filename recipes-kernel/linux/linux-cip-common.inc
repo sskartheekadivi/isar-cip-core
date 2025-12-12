@@ -11,7 +11,8 @@
 
 FILESEXTRAPATHS:prepend := "${FILE_DIRNAME}/files:"
 
-require recipes-kernel/linux/linux-custom.inc
+inherit linux-kernel
+
 require recipes-kernel/linux/cip-kernel-config.inc
 
 SRC_URI += "${@'file://preempt-rt.cfg' if d.getVar('KERNEL_NAME') == 'cip-rt' else ''}"

@@ -1,0 +1,134 @@
+From e52be3bd18187191418ea8b2fdd407e1265b462a Mon Sep 17 00:00:00 2001
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Fri, 12 Dec 2025 17:10:49 +0100
+Subject: [PATCH 1/2] initramfs: Align custom built image name to standard one
+
+As now both standard initramfs as well as custom ones define their
+deployment name via INITRD_DEPLOY_FILE, they also need to use the same
+naming pattern, or things are falling apart, e.g. in downstream layers
+that actually use INITRAMFS_IMAGE_NAME as image name source.
+
+Update the testsuite as well, even in places where the image name is
+self-defined, just to avoid confusion.
+
+Fixes: c3c4e72cbfc4 ("image: introduce IMAGE_INITRD, deprecate INITRD_IMAGE")
+Fixes: 8dbffe075b15 ("RECIPE-API-CHANGELOG: Fix entry for IMAGE_INITRD")
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ RECIPE-API-CHANGELOG.md                              | 10 +++++++++-
+ meta-isar/recipes-initramfs/images/isar-dracut.bb    |  2 +-
+ meta-isar/recipes-initramfs/images/isar-initramfs.bb |  2 +-
+ meta/classes-recipe/image.bbclass                    |  2 +-
+ meta/classes-recipe/initramfs.bbclass                |  2 +-
+ testsuite/citest.py                                  |  6 +++---
+ 6 files changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/RECIPE-API-CHANGELOG.md b/RECIPE-API-CHANGELOG.md
+index 6d7c56b9..caeeb6e3 100644
+--- a/RECIPE-API-CHANGELOG.md
++++ b/RECIPE-API-CHANGELOG.md
+@@ -843,7 +843,7 @@ ROOTFS_FEATURE += "no-generate-initrd"
+ 
+ INITRD_IMAGE could be set to the full name of an initrd image to be found in
+ DEPLOY_DIR_IMAGE. Downstream layers had to assume how Isar names its image
+-artifacts (presently adding a ${DISTRO}-${IMAGE}.initrd.img suffix to initrd
++artifacts (presently adding a ${DISTRO}-${IMAGE}-initrd.img suffix to initrd
+ images) and insert the build of their initramfs recipe into the image build
+ pipeline.
+ 
+@@ -919,3 +919,11 @@ The following includes were considered internal and are no longer available:
+ The other original includes still exist and inherit the corresponding new
+ class. However, they issue a warning to perform the recommended conversion
+ because these transitional includes will eventually be dropped.
++
++### Align custom initramfs deployment name to standard initramfs
++
++While `INITRAMFS_IMAGE_NAME` ended on `.initrd.img`, standard initramfs where
++deployed as `-initrd.img`. This caused confusion and is now even breaking at
++several points as `INITRD_DEPLOY_FILE` is supposed to be used as canonical
++source of the filename. Therefore, switch `INITRAMFS_IMAGE_NAME` to the
++`-initrd.img` suffix as well.
+diff --git a/meta-isar/recipes-initramfs/images/isar-dracut.bb b/meta-isar/recipes-initramfs/images/isar-dracut.bb
+index aa55e360..cafffc47 100644
+--- a/meta-isar/recipes-initramfs/images/isar-dracut.bb
++++ b/meta-isar/recipes-initramfs/images/isar-dracut.bb
+@@ -1,6 +1,6 @@
+ # Example of a custom initramfs image recipe.  The image will be deployed to
+ #
+-#   build/tmp/deploy/images/${MACHINE}/isar-initramfs-${DISTRO}-${MACHINE}.initrd.img
++#   build/tmp/deploy/images/${MACHINE}/isar-initramfs-${DISTRO}-${MACHINE}-initrd.img
+ #
+ # This software is a part of ISAR.
+ 
+diff --git a/meta-isar/recipes-initramfs/images/isar-initramfs.bb b/meta-isar/recipes-initramfs/images/isar-initramfs.bb
+index d2a946f7..3d7aa203 100644
+--- a/meta-isar/recipes-initramfs/images/isar-initramfs.bb
++++ b/meta-isar/recipes-initramfs/images/isar-initramfs.bb
+@@ -1,6 +1,6 @@
+ # Example of a custom initramfs image recipe.  The image will be deployed to
+ #
+-#   build/tmp/deploy/images/${MACHINE}/isar-initramfs-${DISTRO}-${MACHINE}.initrd.img
++#   build/tmp/deploy/images/${MACHINE}/isar-initramfs-${DISTRO}-${MACHINE}-initrd.img
+ #
+ # This software is a part of ISAR.
+ 
+diff --git a/meta/classes-recipe/image.bbclass b/meta/classes-recipe/image.bbclass
+index 34e40465..e605bc80 100644
+--- a/meta/classes-recipe/image.bbclass
++++ b/meta/classes-recipe/image.bbclass
+@@ -21,7 +21,7 @@ IMAGE_INSTALL += "${KERNEL_IMAGE_PKG}"
+ # Name of the image including distro&machine names
+ IMAGE_FULLNAME = "${PN}-${DISTRO}-${MACHINE}"
+ 
+-# Deprecated; this would be set to e.g. "${INITRAMFS_RECIPE}-${DISTRO}-${MACHINE}.initrd.img"
++# Deprecated; this would be set to e.g. "${INITRAMFS_RECIPE}-${DISTRO}-${MACHINE}-initrd.img"
+ INITRD_IMAGE ?= ""
+ 
+ # IMAGE_INITRD should be used instead (variables consumed by this image class should
+diff --git a/meta/classes-recipe/initramfs.bbclass b/meta/classes-recipe/initramfs.bbclass
+index cd32899d..04a18d0c 100644
+--- a/meta/classes-recipe/initramfs.bbclass
++++ b/meta/classes-recipe/initramfs.bbclass
+@@ -9,7 +9,7 @@ STAMPCLEAN = "${STAMPS_DIR}/${DISTRO}-${DISTRO_ARCH}/${PN}-${MACHINE}/*-*"
+ INITRAMFS_INSTALL ?= ""
+ INITRAMFS_PREINSTALL ?= ""
+ INITRAMFS_ROOTFS ?= "${WORKDIR}/rootfs"
+-INITRAMFS_IMAGE_NAME = "${INITRAMFS_FULLNAME}.initrd.img"
++INITRAMFS_IMAGE_NAME = "${INITRAMFS_FULLNAME}-initrd.img"
+ INITRAMFS_GENERATOR_PKG ??= "initramfs-tools"
+ INITRD_DEPLOY_FILE = "${INITRAMFS_IMAGE_NAME}"
+ 
+diff --git a/testsuite/citest.py b/testsuite/citest.py
+index 27cc9ff6..76a3df69 100755
+--- a/testsuite/citest.py
++++ b/testsuite/citest.py
+@@ -332,7 +332,7 @@ class InitRdBaseTest(CIBaseTest):
+                                           lines='',
+                                           bb_should_fail=False):
+         mc = f'mc:{machine}-{distro.removeprefix("debian-")}'
+-        initrd_image = f'{initrd}-{distro}-{machine}.initrd.img'
++        initrd_image = f'{initrd}-{distro}-{machine}-initrd.img'
+         initrd_path = os.path.join(self.deploy_dir_image(machine), initrd_image)
+ 
+         # cleansstate if the initrd image was already built/deployed to verify
+@@ -387,7 +387,7 @@ class InitRdTest(InitRdBaseTest):
+         machine = 'qemuamd64'
+ 
+         lines = [
+-            f"INITRD_IMAGE = '{initrd}-{distro}-{machine}.initrd.img'",
++            f"INITRD_IMAGE = '{initrd}-{distro}-{machine}-initrd.img'",
+             f"do_image[depends] += '{initrd}:do_build'"
+         ]
+ 
+@@ -413,7 +413,7 @@ class InitRdTest(InitRdBaseTest):
+         # by specifying an invalid recipe name: bitbake should fail.
+         lines = [
+             "IMAGE_INITRD = 'not-a-valid-initrd-recipe'",
+-            f"INITRD_IMAGE = '{initrd}-debian-bookworm-qemuamd64.initrd.img'"
++            f"INITRD_IMAGE = '{initrd}-debian-bookworm-qemuamd64-initrd.img'"
+         ]
+         self.build_image_with_dependent_initrd('isar-image-ci', initrd, lines=lines,
+                                                bb_should_fail=True)
+-- 
+2.51.0
+

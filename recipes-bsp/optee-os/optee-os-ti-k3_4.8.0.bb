@@ -7,7 +7,8 @@
 # SPDX-License-Identifier: MIT
 #
 
-require recipes-bsp/optee-os/optee-os-custom.inc
+inherit optee-os
+
 require optee-os-ti-k3_${PV}.inc
 
 # StMM integration, required by UEFI auth variable management

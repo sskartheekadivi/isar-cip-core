@@ -9,7 +9,8 @@
 # SPDX-License-Identifier: MIT
 #
 
+inherit optee-os-tadevkit
+
 OPTEE_ENABLE_APPS = "0"
 
-require recipes-bsp/optee-os/optee-os-tadevkit-custom.inc
 require optee-os-qemu-arm64_${PV}.inc

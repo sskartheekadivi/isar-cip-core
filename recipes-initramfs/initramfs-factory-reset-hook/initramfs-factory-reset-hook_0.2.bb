@@ -8,7 +8,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-require recipes-initramfs/initramfs-hook/hook.inc
+inherit initramfs-hook
+
 DESCRIPTION = "Delete the content of the given Devices"
 
 # list of partitions by label

@@ -9,7 +9,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-require recipes-initramfs/initramfs-hook/hook.inc
+inherit initramfs-hook
 
 SRC_URI += " \
     file://hook \
