@@ -35,7 +35,7 @@ SRC_URI[am62p-sysfw-enc-hs.sha256sum] = "4d0ed21a36dd57ada78307506403204e179d81d
 S = "${WORKDIR}/u-boot-${PV}"
 TI_LINUX_FIRMWARE = "${S}/ti-linux-firmware"
 
-COMPATIBLE_MACHINE = "ti-am62px-sk"
+COMPATIBLE_MACHINE = "^(ti-am62px-sk)$"
 
 U_BOOT_R5_CONFIG = "am62px_evm_r5_defconfig"
 U_BOOT_A53_CONFIG = "am62px_evm_a53_defconfig"

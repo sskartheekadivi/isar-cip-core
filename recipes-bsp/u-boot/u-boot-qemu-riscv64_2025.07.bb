@@ -12,7 +12,7 @@
 require u-boot-common-${PV}.inc
 require u-boot-qemu-common.inc
 
-COMPATIBLE_MACHINE = "qemu-riscv64"
+COMPATIBLE_MACHINE = "^(qemu-riscv64)$"
 
 # we run as OpenSBI payload, hence use smode
 U_BOOT_CONFIG = "${MACHINE}_smode_defconfig"

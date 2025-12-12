@@ -11,7 +11,7 @@
 
 require u-boot-common-${PV}.inc
 
-COMPATIBLE_MACHINE = "bbb"
+COMPATIBLE_MACHINE = "^(bbb)$"
 
 U_BOOT_CONFIG = "am335x_evm_defconfig"
 U_BOOT_BIN = "all"

@@ -12,6 +12,6 @@
 require u-boot-common-${PV}.inc
 require u-boot-qemu-common.inc
 
-COMPATIBLE_MACHINE = "qemu-arm"
+COMPATIBLE_MACHINE = "^(qemu-arm)$"
 
 U_BOOT_CONFIG = "qemu_arm_defconfig"

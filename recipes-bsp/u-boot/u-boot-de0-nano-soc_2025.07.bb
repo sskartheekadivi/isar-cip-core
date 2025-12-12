@@ -11,7 +11,7 @@
 
 require u-boot-common-${PV}.inc
 
-COMPATIBLE_MACHINE = "de0-nano-soc"
+COMPATIBLE_MACHINE = "^(de0-nano-soc)$"
 
 U_BOOT_CONFIG = "socfpga_de0_nano_soc_defconfig"
 U_BOOT_BIN = "u-boot-with-spl.sfp"
