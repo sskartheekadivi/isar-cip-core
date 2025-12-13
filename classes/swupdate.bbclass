@@ -10,8 +10,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-inherit template
-
 RO_ROOTFS_TYPE ??= "squashfs"
 SWU_ROOTFS_TYPE ?= "${RO_ROOTFS_TYPE}"
 SWU_ROOTFS_NAME ?= "${IMAGE_FULLNAME}"
