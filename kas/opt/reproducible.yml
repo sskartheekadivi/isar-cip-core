@@ -15,3 +15,4 @@ local_conf_header:
   reproducible-builds: |
     WIC_DEPLOY_PARTITIONS = "1"
     ISAR_USE_APT_SNAPSHOT = "1"
+    NO_MODULE_SIGNING = "1"

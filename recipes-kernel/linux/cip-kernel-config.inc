@@ -28,3 +28,7 @@ KERNEL_DEFCONFIG ?= "${@ \
 KBUILD_DEPENDS:append = "${@ \
     ', lzop, lz4' \
     if bb.utils.to_boolean(d.getVar('USE_CIP_KERNEL_CONFIG')) else ''}"
+
+SRC_URI:append = " ${@ \
+    'file://no-module-signing.cfg' if bb.utils.to_boolean(d.getVar('NO_MODULE_SIGNING')) else '' \
+    }"
