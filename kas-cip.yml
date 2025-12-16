@@ -22,13 +22,9 @@ repos:
 
   isar:
     url: https://github.com/ilbers/isar.git
-    commit: 0174bd2260f1dec2b40deffa89f8028fca7b1557
+    commit: d364cfa643d1d61d768b5235b9783ca083a564ab
     layers:
       meta:
-    patches:
-      p1:
-        repo: cip-core
-        path: isar-patches/0001-initramfs-Align-custom-built-image-name-to-standard-.patch
 
 bblayers_conf_header:
   standard: |
