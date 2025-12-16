@@ -38,6 +38,8 @@ HOOK_COPY_EXECS = "mountpoint findmnt mktemp rmdir basename \
                    chattr grep find"
 HOOK_COPY_EXECS:append:encrypt-partitions = " tpm2_clear"
 
+HOOK_ADD_MODULES = "efivarfs"
+
 # provide the script under the required name
 do_prepare_build:append() {
     rm -f ${WORKDIR}/local-top ${WORKDIR}/local-bottom
