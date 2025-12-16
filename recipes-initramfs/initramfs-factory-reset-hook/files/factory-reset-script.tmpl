@@ -9,7 +9,25 @@
 #
 . /usr/share/factory-reset/reset-env
 
+. /scripts/cip-initramfs-functions
+
+check_partitions()
+{
+    found=0
+    for partition in ${INITRAMFS_FACTORY_RESET_DEVICES}; do
+        if blkid | grep -q "$(basename $partition)"; then
+            found=$((found + 1))
+        fi
+    done
+    if [ "$found" -eq "$(awk -v var="${INITRAMFS_FACTORY_RESET_DEVICES}" 'BEGIN{n=split(var,a," "); print n}')" ]; then
+        return 0
+    fi
+    return 1
+}
+
 target_devices="${INITRAMFS_FACTORY_RESET_DEVICES}"
+
+wait_30sec_for_condition check_partitions
 
 if /usr/sbin/get-factory-reset.sh --delete | grep -q "factory-reset"; then
     log_begin_msg "Factory Reset"

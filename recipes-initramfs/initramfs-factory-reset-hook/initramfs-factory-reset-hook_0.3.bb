@@ -30,8 +30,11 @@ TEMPLATE_VARS += " INITRAMFS_FACTORY_RESET_DEVICES \
                    INITRAMFS_FACTORY_RESET_LUKS_FORMAT_TYPE \
                    INITRAMFS_FACTORY_RESET_CLEAR_TPM"
 
-RDEPENDS = "factory-reset-helper"
-DEBIAN_DEPENDS .= ", coreutils, util-linux, e2fsprogs, btrfs-progs, awk, factory-reset-helper, findutils"
+RDEPENDS = "factory-reset-helper \
+            initramfs-cip-functions"
+
+DEBIAN_DEPENDS .= ", coreutils, util-linux, e2fsprogs, btrfs-progs, awk, \
+                    factory-reset-helper, findutils, initramfs-cip-functions"
 DEBIAN_DEPENDS:append:encrypt-partitions = ", tpm2-tools"
 HOOK_COPY_EXECS = "mountpoint findmnt mktemp rmdir basename \
                    mke2fs mkfs.btrfs awk blkid rm get-factory-reset.sh \
