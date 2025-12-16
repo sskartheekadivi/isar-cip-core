@@ -40,14 +40,10 @@ HOOK_COPY_EXECS:append:encrypt-partitions = " tpm2_clear"
 
 HOOK_ADD_MODULES = "efivarfs"
 
-# provide the script under the required name
-do_prepare_build:append() {
-    rm -f ${WORKDIR}/local-top ${WORKDIR}/local-bottom
-    ln -sf ${WORKDIR}/factory-reset-script ${WORKDIR}/${FACTORY_RESET_HOOK_TARGET}
-}
-
 do_install[cleandirs] += "${D}/usr/share/factory-reset/"
 do_install:prepend() {
+    rm -f ${WORKDIR}/local-top ${WORKDIR}/local-bottom
+    ln -sf ${WORKDIR}/factory-reset-script ${WORKDIR}/${FACTORY_RESET_HOOK_TARGET}
     install -m 0755 "${WORKDIR}/reset-env" \
         "${D}/usr/share/factory-reset/reset-env"
 }
