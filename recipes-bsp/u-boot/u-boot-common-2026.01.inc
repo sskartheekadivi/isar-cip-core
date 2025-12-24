@@ -21,6 +21,9 @@ SRC_URI += " \
     file://0004-arch-arm-mach-socfpga-Adjust-a-raw-sectors-for-MMC-l.patch \
     file://0005-configs-socfpga-Fix-de0_nano_soc-boot.patch \
     file://0006-configs-socfpga-Permit-EFI-booting.patch \
+    file://0001-riscv-create-a-custom-CPU-implementation-for-PolarFi.patch \
+    file://0002-riscv-mpfs-move-SoC-level-options-to-the-CPU-Kconfig.patch \
+    file://0003-riscv-Add-support-for-BeagleV-Fire.patch \
     file://rules.tmpl;subdir=debian"
 SRC_URI[sha256sum] = "b60d5865cefdbc75da8da4156c56c458e00de75a49b80c1a2e58a96e30ad0d54"
 
