@@ -21,3 +21,8 @@ DEBIAN_BUILD_DEPENDS += ", hss-payload-generator:native"
 U_BOOT_CONFIG = "beaglev_fire_defconfig"
 U_BOOT_BIN = "u-boot.bin"
 U_BOOT_EXTRA_BUILDCMD = "hss-payload-generator -c debian/beaglev-fire-config.yaml payload.bin"
+
+do_prepare_build:append() {
+    echo "payload.bin /usr/lib/u-boot/${MACHINE}" > \
+        ${S}/debian/u-boot-${MACHINE}.install
+}
