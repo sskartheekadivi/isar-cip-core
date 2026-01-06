@@ -33,7 +33,12 @@ IMAGE_PREINSTALL += " \
 	passwd \
 	login \
 	util-linux \
+	systemd-cryptsetup \
 "
+# Remove systemd-cryptsetup from older versions as it's only available in Trixie and later.
+IMAGE_PREINSTALL:remove:bullseye = " systemd-cryptsetup"
+IMAGE_PREINSTALL:remove:buster = " systemd-cryptsetup"
+IMAGE_PREINSTALL:remove:bookworm = " systemd-cryptsetup"
 
 CIP_IMAGE_OPTIONS ?= ""
 require ${CIP_IMAGE_OPTIONS}
