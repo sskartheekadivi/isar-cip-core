@@ -17,6 +17,9 @@ do_image_wic[depends] += "${INITRAMFS_RECIPE}:do_build"
 WIC_HOME_PARTITION = ""
 WIC_HOME_PARTITION:separate-home-part = "part /home --source rootfs --change-directory=home --fstype=ext4 --label home --align 1024  --size 1G --fsuuid 1f55d66a-40d8-11ee-be56-0242ac120002 --uuid c07d5e8f-3448-46dc-9c0f-58904f369524"
 
+WIC_VAR_PARTITION_FSTYPE ??= "ext4"
+WIC_VAR_PARTITION ??= "part /var --fstype=${WIC_VAR_PARTITION_FSTYPE} --label var --align 1024 --fixed-size 512M --fsuuid 96be3374-4258-11ee-be56-0242ac120002 --uuid 9947ed57-102f-4038-880c-9cf5cacaf153"
+
 IMAGE_INSTALL += " move-homedir-var"
 IMAGE_INSTALL:append:separate-home-part = " home-fs"
 IMAGE_INSTALL:remove:separate-home-part = " move-homedir-var"
