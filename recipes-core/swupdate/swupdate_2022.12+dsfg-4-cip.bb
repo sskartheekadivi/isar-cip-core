@@ -37,5 +37,5 @@ CHANGELOG_V ?= "${PV}-${SRCREV}"
 do_prepare_build() {
     deb_add_changelog
     cd ${WORKDIR}
-    tar cJf ${PN}_${PV}.orig.tar.xz --exclude=.git --exclude=debian ${P}
+    tar cJf ${PN}_${PV}.orig.tar.xz ${TAR_REPRO_OPTS} ${P}
 }
