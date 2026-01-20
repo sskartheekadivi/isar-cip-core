@@ -80,7 +80,10 @@ IMAGE_TEMPLATE_VARS:swu = " \
 # TARGET_IMAGE_UUID needs to be generated before completing the template
 addtask transform_template after do_generate_image_uuid
 
-do_extend_sw_description[vardeps] += "SWU_HW_COMPAT"
+do_extend_sw_description[vardeps] += " \
+    SWU_HW_COMPAT \
+    DELTA_ZCK_URL \
+"
 python do_extend_sw_description() {
     cmds = d.getVar("SWU_EXTEND_SW_DESCRIPTION")
     if cmds is None or not cmds.strip():
