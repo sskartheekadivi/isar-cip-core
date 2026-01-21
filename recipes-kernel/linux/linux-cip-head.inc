@@ -14,7 +14,7 @@ require linux-cip-common.inc
 def get_commit(d):
     try:
         return bb.fetch2.get_srcrev(d).replace('AUTOINC+', '')
-    except bb.fetch2.FetchError:
+    except (bb.fetch2.FetchError, bb.fetch2.NetworkAccess):
         return ""
 
 KERNEL_MAJOR_MINOR := "${@d.getVar('PV').split('-')[0]}"
