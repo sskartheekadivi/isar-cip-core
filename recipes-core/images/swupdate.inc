@@ -57,5 +57,9 @@ python() {
 IMAGE_INSTALL:append = "${@' swupdate' if bb.utils.to_boolean(d.getVar('SWUPDATE_SELFBUILT')) else ''}"
 IMAGE_PREINSTALL:append = "${@'' if bb.utils.to_boolean(d.getVar('SWUPDATE_SELFBUILT')) else ' swupdate'}"
 
+WFX_URL ??= ""
+# check for wfx url to enable support for wfx backend based updates
+IMAGE_INSTALL:append = "${@' swupdate-config-wfx' if d.getVar("WFX_URL") else ''}"
+
 IMAGE_INSTALL += " swupdate-handler-roundrobin"
 IMAGE_INSTALL += " swupdate-config"
