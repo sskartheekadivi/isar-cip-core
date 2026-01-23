@@ -279,6 +279,13 @@ config IMAGE_SWUPDATE
 
 if IMAGE_SWUPDATE
 
+config WFX_URL
+	string "WFX backend URL"
+	default ""
+	help
+	  URL of the wfx backend for software updates. An empty string here implies wfx support is disabled.
+	  See ./doc/README.swupdate.md for more about wfx support for updates.
+
 choice
 	prompt "Update type"
 
