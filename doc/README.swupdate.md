@@ -464,6 +464,137 @@ Any http server (service) can be used to host the .zck file as long as the http 
 
 Follow the steps mentioned in the section [SWUpdate verification](#swupdate-verification) for verification.
 
+# Software update with wfx
+
+**NOTE**: In the following sections, `WFX_HOST` refers to the IP address or DNS-resolvable name of your `wfx` server. Please substitute `WFX_HOST` with the appropriate value wherever it appears.
+
+Set the `WFX backend URL` to `http://WFX_HOST:8080/api/wfx/v1` via the `Kconfig` menu.
+
+Install `wfxctl` and `wfx` in the host:
+The instructions below assume that `wfxctl` and `wfx` are running on a `x86-64` host. Binaries for other architectures are also available for [download](https://github.com/siemens/wfx/releases).
+```
+## Install wfxctl
+host$ curl -LO https://github.com/siemens/wfx/releases/download/v0.4.1/wfxctl_0.4.1_linux_x86_64.deb
+host$ dpkg -i wfxctl_0.4.1_linux-x86_64.deb
+
+## Install wfx
+host$ curl -LO https://github.com/siemens/wfx/releases/download/v0.4.1/wfx_0.4.1_linux_x86_64.deb
+host$ dpkg -i wfx_0.4.1_linux-x86_64.deb
+```
+
+Build an image using the Kconfig menu which will later serve as update package. Set `WFX backend URL`.
+```
+    -> "Target Board"
+      -> "QEMU AMD64 (x86-64)"
+    -> "CIP kernel version"
+      -> "Kernel 6.12.x-cip"
+    -> "Debian Release"
+      -> "trixie (13)"
+    -> "SWUpdate support for root partition"
+      -> "WFX backend URL"
+      -> "Update type"
+        -> "Complete Update"
+```
+
+Save the generated swu build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-trixie-qemu-amd64.swu into a separate folder
+
+```
+host$ mkdir -p /tmp/artifacts
+host$ cp build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-trixie-qemu-amd64.swu /tmp/artifacts
+```
+
+Next, rebuild the image using the Kconfig menu, switching to the RT kernel as modification:
+```
+    -> "Target Board"
+      -> "QEMU AMD64 (x86-64)"
+    -> "CIP kernel version"
+      -> "Kernel 6.12.x-cip"
+    -> "Real-time CIP kernel"
+    -> "Debian Release"
+      -> "trixie (13)"
+    -> "SWUpdate support for root partition"
+      -> "WFX backend URL"
+      -> "Update type"
+        -> "Complete Update"
+```
+
+Now start the image which will contain the RT kernel:
+```
+host$ SWUPDATE_BOOT=y ./start-qemu.sh amd64
+```
+
+Check the machine-id in `/etc/machine-id`. SWUpdate is launched with this `id` as the `client-id` and is later used to create `wfx` job for the client:
+```
+root@demo cat /etc/machine-id
+049adc79659044f8887c83b3203c84f1
+```
+
+Start `wfx` server in the host:
+```
+host$ wfx --simple-fileserver /tmp/artifacts
+```
+Alternatively, `wfx` can also be run as a [docker container](https://github.com/siemens/wfx/blob/a6ecb60bb47eaf1f95a2b65b4190538a246d79d1/docs/installation.md#build-and-installation).
+
+Create `wfx.workflow.dau.direct` wofkflow:
+```
+host$ curl -L https://raw.githubusercontent.com/siemens/wfx/refs/heads/main/workflow/dau/wfx.workflow.dau.direct.yml | wfxctl workflow create -
+```
+
+Create a wfx job that updates the device. Set `client-id` with the `id` from `/etc/machine-id` in qemu:
+```
+host$ cat <<EOF | envsubst | wfxctl job create --client-id '049adc79659044f8887c83b3203c84f1' --workflow wfx.workflow.dau.direct -
+{
+  "version": "1.0",
+  "type": ["firmware"],
+  "artifacts": [
+    {
+      "name": "Example Device Firmware Artifact",
+      "version": "1.1",
+      "uri": "http://${WFX_HOST}:8080/download/cip-core-image-cip-core-trixie-qemu-amd64.swu"
+    }
+  ]
+}
+EOF
+```
+
+Wait for the next swupdate polling round (every 20 seconds) to see how swupdate downloads and applies the update.
+```
+root@demo journalctl -u swupdate -f
+
+// truncated output
+swupdate.sh[432]: [TRACE] : SWUPDATE running :  [start_suricatta] : Suricatta awakened.
+swupdate.sh[432]: [DEBUG] : SWUPDATE running :  [notify_helper] : Suricatta querying "http://WFX_HOST:8080/api/wfx/v1/jobs?clientId=049adc79659044f8887c83b3203c84f1&group=OPEN"
+```
+
+Once the update is successfully installed, the device automatically reboots. After reboot, suricatta automatically updates the bootloader state.
+```
+root@demo bg_printenv
+
+----------------------------
+ Config Partition #0 Values:
+in_progress:      no
+revision:         2
+kernel:           C:BOOT0:linux.efi
+kernelargs:
+watchdog timeout: 120 seconds
+ustate:           0 (OK)
+
+user variables:
+
+
+
+----------------------------
+ Config Partition #1 Values:
+in_progress:      no
+revision:         3
+kernel:           C:BOOT1:linux.efi
+kernelargs:
+watchdog timeout: 120 seconds
+ustate:           0 (OK)
+
+user variables:
+```
+
 # Building and testing the CIP Core image for BBB
 
 Follow the steps mentioned in the section [Building and testing the CIP Core image](README.swupdate.md#building-and-testing-the-cip-core-image) for creating images and .swu files.
