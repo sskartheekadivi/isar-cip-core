@@ -1,1 +1,0 @@
-linux-cip_6.12.63-cip15.bb
