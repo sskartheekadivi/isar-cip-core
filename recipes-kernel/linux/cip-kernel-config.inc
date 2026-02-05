@@ -1,7 +1,7 @@
 #
 # CIP Core, generic profile
 #
-# Copyright (c) Siemens AG, 2022-2025
+# Copyright (c) Siemens AG, 2022-2026
 #
 # Authors:
 #  Jan Kiszka <jan.kiszka@siemens.com>
@@ -15,7 +15,7 @@ SRC_URI:append = " ${@ \
     if bb.utils.to_boolean(d.getVar('USE_CIP_KERNEL_CONFIG')) else '' \
     }"
 
-SRCREV_cip-kernel-config ?= "1dc986a03d529225404696a5169c29b6958f453c"
+SRCREV_cip-kernel-config ?= "7742c0f098a3bae264dcb7db8128e99954249bb8"
 
 do_fetch[vardeps] += "SRCREV_cip-kernel-config"
 
