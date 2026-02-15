@@ -1,1 +1,0 @@
-linux-cip_6.12.66-cip16.bb
