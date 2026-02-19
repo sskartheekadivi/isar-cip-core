@@ -21,4 +21,4 @@ TF_A_PLATFORM = "k3"
 TF_A_EXTRA_BUILDARGS = "CFG_ARM64=y TARGET_BOARD=lite SPD=opteed K3_PM_SYSTEM_SUSPEND=1"
 TF_A_BINARIES = "lite/release/bl31.bin"
 
-COMPATIBLE_MACHINE = "^(ti-am62px-sk)$"
+COMPATIBLE_MACHINE = "^(ti-am62px-sk|ti-am62x-sk)$"
