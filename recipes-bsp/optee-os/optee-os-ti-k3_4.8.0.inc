@@ -16,7 +16,8 @@ SRC_URI[sha256sum] = "5222cd553f5edb69ae4ec7cb99b2bfec2c47a47c0be1865b4974470191
 S = "${WORKDIR}/optee_os-${PV}"
 
 OPTEE_NAME = "ti-k3"
-OPTEE_PLATFORM = "k3-am62px"
+OPTEE_PLATFORM:ti-am62px-sk = "k3-am62px"
+OPTEE_PLATFORM:ti-am62x-sk = "k3-am62x"
 OPTEE_EXTRA_BUILDARGS += " \
 	CFG_ARM64_core=y \
 	CFG_USER_TA_TARGETS=ta_arm64 \
