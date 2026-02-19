@@ -12,6 +12,8 @@ software =
 {
     version = "${SWU_VERSION}";
     name = "${SWU_NAME}";
+    bootloader_transaction_marker = false;
+    bootloader_state_marker = false;
     ${SWU_HW_COMPAT_NODE}
     files: (${SWU_BOOTLOADER_FILE_NODE});
 }
