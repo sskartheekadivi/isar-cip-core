@@ -208,6 +208,7 @@ comment "Firmware options"
 
 config FTPM_STMM
 	bool "Use Firmware TPM and rewritable UEFI key storage"
+	depends on IMAGE_SWUPDATE
 	depends on !DEBIAN_BUSTER
 
 config KAS_INCLUDE_FTPM_STMM
