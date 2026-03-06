@@ -26,3 +26,17 @@ local_conf_header:
     PREFERRED_PROVIDER_swupdate-certificates-key ??= "swupdate-certificates-key-snakeoil"
     PREFERRED_PROVIDER_swupdate-certificates ??= "swupdate-certificates-snakeoil"
     PREFERRED_PROVIDER_swupdate-signer ??= "swupdate-signer-cms"
+
+  wipe-fs-header: |
+    # Overwrite the first 5 MiB of the rootfs-B partition with zeroes to avoid undesired
+    # hold-partition-data bugs. Especially on systems with disk encryption enabled for the
+    # rootfs, we need to make sure that LUKS2 headers already stored on the disk from a
+    # previous installation are properly overwritten by `bmaptool copy`.
+    # By setting the sourceparams="size=5M" the first 5 MiB of the partition will be overwritten
+    # with zeros, which is sufficient to cover: LUKS2 header, squashfs, erofs, ...
+    # - the LUKS2 header (4k) and the backup header (max offset used by cryptsetup = 4M),
+    # - the squashfs superblock (96 bytes) starting with fs identifier (4 bytes)
+    #   which is stored at the begin of the partition,
+    # - the erofs superblock (78 bytes) starting with fs identifier (4 bytes)
+    #   which is stored at an offset of 1k
+    ABROOTFS_SOURCEPARAMS_B = "size=5M"
