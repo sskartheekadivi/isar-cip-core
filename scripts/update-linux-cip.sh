@@ -4,7 +4,7 @@ pushd "${REPO_ROOT}"/recipes-kernel/linux >/dev/null || exit 1
 
 for MAJOR_VERSION in 4.4 4.19 5.10 6.1 6.12; do
 	rm -f sha256sums.asc
-	wget -q https://cdn.kernel.org/pub/linux/kernel/projects/cip/${MAJOR_VERSION}/sha256sums.asc
+	wget -q https://mirrors.kernel.org/pub/linux/kernel/projects/cip/${MAJOR_VERSION}/sha256sums.asc
 	if ! gpg --verify sha256sums.asc 2>/dev/null; then
 		echo "sha256sums.asc for ${MAJOR_VERSION} invalid!"
 		exit 1
