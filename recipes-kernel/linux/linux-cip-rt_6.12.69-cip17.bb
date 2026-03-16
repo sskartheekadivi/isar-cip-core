@@ -1,1 +1,0 @@
-linux-cip_6.12.69-cip17.bb

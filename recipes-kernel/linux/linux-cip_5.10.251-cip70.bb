@@ -11,4 +11,4 @@
 
 require linux-cip-release.inc
 
-SRC_URI[sha256sum] = "9e5342629465767c635f7afd2b9d0c60fa70204d9609da00021e307e306f443c"
+SRC_URI[sha256sum] = "c4553da39c63f299df7c9b86294fc821afe28bb623bf017ed72a76f47d96c134"
