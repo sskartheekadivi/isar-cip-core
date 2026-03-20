@@ -292,7 +292,7 @@ IMAGE_CMD:swu() {
                     esac
                 fi
             done | cpio \
-                --verbose --dereference --create --reproducible --format=crc \
+                --verbose --owner 0:0 --dereference --create --reproducible --format=crc \
                 > "${PP_DEPLOY}/${SWU_IMAGE_FILE}$swu_file_extension.swu"
 EOIMAGER
     done
