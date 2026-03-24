@@ -3,6 +3,8 @@
 # CIP Security, generic profile
 # Security Package configurations
 #
+# SPDX-License-Identifier: MIT
+#
 
 set -e
 

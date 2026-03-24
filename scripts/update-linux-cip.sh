@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 REPO_ROOT=$(git rev-parse --show-toplevel)
 pushd "${REPO_ROOT}"/recipes-kernel/linux >/dev/null || exit 1
 

@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 # Copyright (C) 2024, Renesas Electronics Europe GmbH
 # Chris Paterson <chris.paterson2@renesas.com>
 # Sai Ashrith <sai.sathujoda@toshiba-tsip.com>

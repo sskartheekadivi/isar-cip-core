@@ -1,3 +1,6 @@
+#
+# SPDX-License-Identifier: MIT
+#
 # default partition layout EFI Boot Guard usage
 
 # EFI partition containing efibootguard bootloader binary

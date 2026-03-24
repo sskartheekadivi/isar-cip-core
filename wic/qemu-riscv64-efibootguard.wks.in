@@ -1,3 +1,6 @@
+#
+# SPDX-License-Identifier: MIT
+#
 # short-description: riscv64 with EFI Boot Guard and SWUpdate
 # long-description: Disk image for riscv64 machines with EFI Boot Guard and SWUpdate
 

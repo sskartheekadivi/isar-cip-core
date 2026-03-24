@@ -1,4 +1,7 @@
 #!/usr/bin/make -f
+#
+# SPDX-License-Identifier: MIT
+#
 export DEB_CFLAGS_MAINT_APPEND  = -Wall  -Wno-format-security
 export DEB_BUILD_MAINT_OPTIONS=hardening=-branch
 

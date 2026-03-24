@@ -1,3 +1,6 @@
+#
+# SPDX-License-Identifier: MIT
+#
 # qemu-swtpm.sock will be gone after soft reboot.
 # So the swtpm socket need to be started again for proper reboot
 # To start the swtpm daemon, first the existing one should be killed

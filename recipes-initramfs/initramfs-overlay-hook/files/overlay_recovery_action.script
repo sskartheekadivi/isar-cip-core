@@ -7,6 +7,8 @@
 # Authors:
 #  Clara Kowalsky <clara.kowalsky@siemens.com>
 #
+# SPDX-License-Identifier: MIT
+#
 
 partition_fstype="$1"
 ovl_partition_device="$2"
