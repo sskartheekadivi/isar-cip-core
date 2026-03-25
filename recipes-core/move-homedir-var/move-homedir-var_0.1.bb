@@ -10,6 +10,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 DEBIAN_CONFLICTS = "home-fs"
 SRC_URI = "file://${BPN}.tmpfiles.tmpl"
 

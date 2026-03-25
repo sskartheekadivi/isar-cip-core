@@ -11,6 +11,8 @@
 
 inherit initramfs-hook
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 RDEPENDS += "initramfs-cip-functions"
 DEBIAN_DEPENDS .= ", util-linux, initramfs-cip-functions"
 DEBIAN_CONFLICTS = "initramfs-verity-hook"

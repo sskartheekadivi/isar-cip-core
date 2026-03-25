@@ -11,6 +11,8 @@
 
 inherit dpkg
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 CHANGELOG_V="<orig-version>+cip"
 
 SRC_URI = "apt://${BPN}"

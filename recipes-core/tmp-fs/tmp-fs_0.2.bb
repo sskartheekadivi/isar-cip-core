@@ -10,6 +10,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 SRC_URI = "file://postinst"
 
 do_install() {

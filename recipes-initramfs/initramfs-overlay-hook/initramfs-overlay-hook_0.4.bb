@@ -12,6 +12,8 @@
 
 inherit initramfs-hook
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 INITRAMFS_OVERLAY_RECOVERY_SCRIPT ??= "overlay_recovery_action.script"
 
 SRC_URI += " \

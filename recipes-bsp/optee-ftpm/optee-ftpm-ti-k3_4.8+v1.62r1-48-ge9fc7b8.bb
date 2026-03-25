@@ -9,6 +9,8 @@
 
 inherit optee-ftpm
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 SRC_URI += " \
     https://github.com/OP-TEE/optee_ftpm/archive/${SRCREV}.tar.gz;downloadfilename=optee_ftpm-${SRCREV}.tar.gz \
     https://github.com/microsoft/ms-tpm-20-ref/archive/${SRCREV_ms-tpm}.tar.gz;name=ms-tpm;downloadfilename=ms-tpm-20-ref-${SRCREV_ms-tpm}.tar.gz \

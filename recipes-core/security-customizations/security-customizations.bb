@@ -11,6 +11,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 DESCRIPTION = "CIP Security configuration for IEC62443-4-2 evaluation"
 
 SRC_URI = "file://postinst \

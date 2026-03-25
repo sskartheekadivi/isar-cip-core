@@ -11,6 +11,8 @@
 
 inherit u-boot
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 FILESPATH:append := ":${FILE_DIRNAME}/files"
 
 SRC_URI += " \

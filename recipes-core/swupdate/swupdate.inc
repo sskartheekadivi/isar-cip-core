@@ -9,6 +9,8 @@
 # SPDX-License-Identifier: MIT
 
 DESCRIPTION = "swupdate utility for software updates"
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 HOMEPAGE= "https://github.com/sbabic/swupdate"
 LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://${LAYERDIR_isar}/licenses/COPYING.GPLv2;md5=751419260aa954499f7abaabaa882bbe"

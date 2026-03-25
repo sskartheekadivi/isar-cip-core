@@ -11,6 +11,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 FILESEXTRAPATHS:prepend := "${FILE_DIRNAME}/files:"
 
 PROVIDES += "swupdate-certificates"

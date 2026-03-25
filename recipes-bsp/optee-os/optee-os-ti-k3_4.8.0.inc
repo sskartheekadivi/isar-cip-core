@@ -7,6 +7,8 @@
 # SPDX-License-Identifier: MIT
 #
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 SRC_URI += " \
     https://github.com/OP-TEE/optee_os/archive/${PV}.tar.gz;downloadfilename=optee-os-${PV}.tar.gz \
     "

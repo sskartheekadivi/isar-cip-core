@@ -11,6 +11,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 DESCRIPTION = "helper functions for cip initramfs-tools extensions"
 
 SRC_URI += "file://cip-initramfs-functions"

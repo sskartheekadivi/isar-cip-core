@@ -10,6 +10,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 DESCRIPTION = "helper script to execute a factory reset"
 
 PROVIDES = "factory-reset-helper"

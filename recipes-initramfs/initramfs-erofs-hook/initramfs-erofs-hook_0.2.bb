@@ -11,4 +11,6 @@
 
 inherit initramfs-hook
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 HOOK_ADD_MODULES = "erofs"

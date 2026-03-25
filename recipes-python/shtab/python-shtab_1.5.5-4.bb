@@ -11,6 +11,8 @@
 
 inherit dpkg-gbp
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 SRC_URI += " \
     git://salsa.debian.org/python-team/packages/python-shtab.git;protocol=https;branch=main \
     "

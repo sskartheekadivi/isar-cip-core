@@ -11,6 +11,8 @@
 
 inherit dpkg
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 DESCRIPTION = "Linux Test project for CIP"
 
 SRC_URI = " \

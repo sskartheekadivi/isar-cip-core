@@ -11,6 +11,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 PROVIDES += "secure-boot-secrets"
 DEBIAN_PROVIDES = "secure-boot-secrets"
 

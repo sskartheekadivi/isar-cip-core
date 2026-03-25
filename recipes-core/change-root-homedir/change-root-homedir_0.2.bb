@@ -10,6 +10,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 DESCRIPTION = "Move roots homedir to /home for read-only rootfs"
 
 SRC_URI = "file://postinst"

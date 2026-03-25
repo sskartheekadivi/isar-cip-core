@@ -10,6 +10,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 PROVIDES = "swupdate-signer"
 DEBIAN_PROVIDES = "swupdate-signer"
 

@@ -10,6 +10,8 @@
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 SRC_URI = "file://persistent-journal.conf"
 
 do_install[cleandirs] = "${D}/usr/lib/systemd/journald.conf.d/"

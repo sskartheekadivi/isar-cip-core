@@ -10,6 +10,8 @@
 
 inherit initramfs-hook
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 DESCRIPTION = "Delete the content of the given Devices"
 
 # list of partitions by label

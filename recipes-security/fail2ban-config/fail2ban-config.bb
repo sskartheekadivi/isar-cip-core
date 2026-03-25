@@ -12,6 +12,8 @@ DESCRIPTION = "Basic fail2ban config with systemd as backend"
 
 inherit dpkg-raw
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 SRC_URI += "file://systemd-defaults.conf"
 
 DEBIAN_DEPENDS += "fail2ban, python3-systemd, python3-pyinotify"

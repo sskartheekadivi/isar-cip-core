@@ -11,6 +11,8 @@
 
 inherit initramfs-hook
 
+MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+
 SRC_URI += " \
     file://hook \
     file://local-top-complete.tmpl \
