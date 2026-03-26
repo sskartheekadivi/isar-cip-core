@@ -15,7 +15,7 @@
         run:
           steps:
             - curl -v --trace-time http://$LAVA_DISPATCHER_IP/tmp/$LAVA_JOB_ID/downloads/common/cip-core-image-security-cip-core-#distribution#-x86-uefi.swu --output test.swu
-            - if swupdate -i test.swu; then echo software update is successful!!; else lava-test-raise "Fail job"; fi
+            - if swupdate -l 5 -i test.swu; then echo software update is successful!!; else lava-test-raise "Fail job"; fi
       from: inline
       name: sample-test-1
       path: inline/sample-test.yaml

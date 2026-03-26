@@ -73,7 +73,7 @@ actions:
           description: "Test software update"
         run:
           steps:
-            - if swupdate -d "-u #project_url#/#branch#/#architecture#/cip-core-image-security-cip-core-#distribution#-#architecture#.swu"; then echo software update is successful!!; else lava-test-raise "Fail job"; fi
+            - if swupdate -l 5 -d "-u #project_url#/#branch#/#architecture#/cip-core-image-security-cip-core-#distribution#-#architecture#.swu"; then echo software update is successful!!; else lava-test-raise "Fail job"; fi
       from: inline
       name: sample-test-1
       path: inline/sample-test.yaml
