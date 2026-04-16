@@ -1,1 +1,0 @@
-linux-cip_6.12.78-cip19.bb
