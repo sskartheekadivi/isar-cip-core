@@ -1,7 +1,7 @@
 #
 # CIP Core, generic profile
 #
-# Copyright (c) Siemens AG, 2020-2025
+# Copyright (c) Siemens AG, 2020-2026
 #
 # Authors:
 #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
@@ -24,8 +24,8 @@ SRC_URI = " \
     file://debian-patches/0001-d-control-Make-compatible-with-debian-buster.patch \
     file://debian-patches/0002-Revert-d-Enable-unit-tests-post-trixie.patch \
     "
-SRC_URI[tarball.sha256sum] = "f252e87b6acc74df34a0d894f2b5188fe797c2a2b7a14a231b9f224ad9b9de20"
-SRCREV_debian = "86f686fab1a5a55c445718d4bd6a32106f2b8800"
+SRC_URI[tarball.sha256sum] = "6c68c541311dcc8c2be0042f7887acc2a24d2ac68a88d426380fdbda9f476ae8"
+SRCREV_debian = "5d27085b1fcacce130deecc5347792437acbeda6"
 
 PROVIDES = "libebgenv-dev libebgenv0 efibootguard efibootguard-tools"
 
