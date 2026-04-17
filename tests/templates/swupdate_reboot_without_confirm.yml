@@ -25,6 +25,8 @@
       username: "root"
       password_prompt: "Password:"
       password: "CIPsecurity@123"
+      login_commands:
+        - if mountpoint /home; then mount -o remount,exec /home; else mount -o remount,exec /var; fi
     parameters:
        kernel-start-message: "kernel: C:BOOT0:linux.efi"
 

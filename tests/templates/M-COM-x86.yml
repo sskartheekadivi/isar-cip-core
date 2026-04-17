@@ -46,6 +46,8 @@ actions:
       username: "root"
       password_prompt: "Password:"
       password: "CIPsecurity@123"
+      login_commands:
+        - if mountpoint /home; then mount -o remount,exec /home; else mount -o remount,exec /var; fi
     transfer_overlay:
       transfer_method: http
       download_command: "curl -H 'Connection: close' -v --trace-time --output overlay-1.1.1.4.tar.gz"
