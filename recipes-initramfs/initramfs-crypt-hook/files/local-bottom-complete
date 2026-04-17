@@ -36,14 +36,17 @@ esac
 # get configuration variables
 . /usr/share/encrypt_partition/encrypt_partition.env
 
+mount_options="$MOUNT_OPTIONS"
 mount_partition() {
 	partition_dev_path=$1
 	partition_mountpoint=$2
 	[ "$debug" = "y" ] && echo "mount device: '$partition_dev_path' to '$partition_mountpoint'"
 	if ! mountpoint -q "${partition_mountpoint}"; then
 		mkdir -p "${partition_mountpoint}"
-		if ! mount -t "$(get_fstype "${partition_dev_path}")" "${partition_dev_path}" \
-			 "${partition_mountpoint}"; then
+		if ! mount -o "${mount_options}" \
+			   -t "$(get_fstype "${partition_dev_path}")" \
+			   "${partition_dev_path}" \
+			   "${partition_mountpoint}"; then
 			panic "Can't mount partition '${partition_dev_path}'!"
 		fi
 	fi
