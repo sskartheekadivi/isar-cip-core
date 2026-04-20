@@ -18,10 +18,12 @@ DEBIAN_PROVIDES := "${PN}"
 
 PN .= "-${MACHINE}"
 
+WFX_DEVICE_ID ?= "$(cat /etc/machine-id)"
+
 SRC_URI += "file://suricatta_wfx.conf.tmpl"
 
 TEMPLATE_FILES += " suricatta_wfx.conf.tmpl"
-TEMPLATE_VARS += " WFX_URL"
+TEMPLATE_VARS += " WFX_URL WFX_DEVICE_ID"
 
 do_install() {
     install -d ${D}/etc/swupdate/conf.d
