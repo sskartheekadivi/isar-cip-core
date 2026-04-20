@@ -523,7 +523,7 @@ Now start the image which will contain the RT kernel:
 host$ SWUPDATE_BOOT=y ./start-qemu.sh amd64
 ```
 
-Check the machine-id in `/etc/machine-id`. SWUpdate is launched with this `id` as the `client-id` and is later used to create `wfx` job for the client:
+By default, SWUpdate uses the machine-id from `/etc/machine-id` as the `client-id` (configurable via `WFX_DEVICE_ID` in the `swupdate-config-wfx` recipe). This `client-id` is later used to create `wfx` job for the client:
 ```
 root@demo cat /etc/machine-id
 049adc79659044f8887c83b3203c84f1
@@ -540,7 +540,7 @@ Create `wfx.workflow.dau.direct` wofkflow:
 host$ curl -L https://raw.githubusercontent.com/siemens/wfx/refs/heads/main/workflow/dau/wfx.workflow.dau.direct.yml | wfxctl workflow create -
 ```
 
-Create a wfx job that updates the device. Set `client-id` with the `id` from `/etc/machine-id` in qemu:
+Create a wfx job that updates the device. Set `client-id` with the device identity (default: `/etc/machine-id`) from qemu:
 ```
 host$ cat <<EOF | envsubst | wfxctl job create --client-id '049adc79659044f8887c83b3203c84f1' --workflow wfx.workflow.dau.direct -
 {
