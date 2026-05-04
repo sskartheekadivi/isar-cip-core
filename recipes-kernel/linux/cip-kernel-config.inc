@@ -32,3 +32,5 @@ KBUILD_DEPENDS:append = "${@ \
 SRC_URI:append = " ${@ \
     'file://no-module-signing.cfg' if bb.utils.to_boolean(d.getVar('NO_MODULE_SIGNING')) else '' \
     }"
+
+RT_FRAGMENT ?= "${@'cip-kernel-config/cfg/preempt-rt.cfg' if bb.utils.to_boolean(d.getVar('USE_CIP_KERNEL_CONFIG')) else ''}"
