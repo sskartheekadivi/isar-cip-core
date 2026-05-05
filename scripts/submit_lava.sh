@@ -258,7 +258,7 @@ submit_squad_watch_job(){
 
 	local ENV="${SQUAD_PROJECT}_${TARGET}"
 	local squad_url="$SQUAD_WATCH_JOBS_URL/${SQUAD_GROUP}/${SQUAD_PROJECT}/${COMMIT_REF}/${ENV}"
-	ret=$(curl -s \
+	ret=$(curl --max-time 10 --silent \
 		--header "Authorization: token $CIP_SQUAD_LAB_TOKEN" \
 		--form backend="$SQUAD_LAVA_BACKEND" \
 		--form testjob_id="$1" \
