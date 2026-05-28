@@ -1,1 +1,0 @@
-linux-cip_6.12.88-cip23.bb
