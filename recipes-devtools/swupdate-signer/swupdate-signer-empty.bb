@@ -11,6 +11,7 @@
 inherit dpkg-raw
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Placeholder SWUpdate signer that creates a dummy signature"
 
 PROVIDES = "swupdate-signer"
 DEBIAN_PROVIDES = "swupdate-signer"

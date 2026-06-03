@@ -11,6 +11,7 @@
 inherit dpkg-raw
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "SWUpdate signer script to sign with deployed signing certificates"
 
 PROVIDES = "swupdate-signer"
 DEBIAN_PROVIDES = "swupdate-signer"

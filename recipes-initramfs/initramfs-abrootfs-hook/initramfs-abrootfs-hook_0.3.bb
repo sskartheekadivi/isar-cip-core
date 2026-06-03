@@ -12,6 +12,7 @@
 inherit initramfs-hook
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Initramfs hook for selecting and mounting the active A/B root filesystem"
 
 RDEPENDS += "initramfs-cip-functions"
 DEBIAN_DEPENDS .= ", util-linux, initramfs-cip-functions"

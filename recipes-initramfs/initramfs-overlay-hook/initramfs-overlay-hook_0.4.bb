@@ -13,6 +13,7 @@
 inherit initramfs-hook
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Initramfs hook for mounting writable overlays on top of immutable paths"
 
 INITRAMFS_OVERLAY_RECOVERY_SCRIPT ??= "overlay_recovery_action.script"
 

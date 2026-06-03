@@ -12,6 +12,7 @@
 inherit initramfs-hook
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Initramfs hook for TPM-backed encrypted partition setup and unlock"
 
 RDEPENDS += "initramfs-cip-functions"
 

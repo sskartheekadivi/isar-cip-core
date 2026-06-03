@@ -11,6 +11,7 @@
 inherit dpkg-raw
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Lua round-robin SWUpdate handler"
 
 PROVIDES = "swupdate-handlers"
 

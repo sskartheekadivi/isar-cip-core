@@ -12,6 +12,7 @@
 inherit dpkg-raw
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "SWUpdate base configuration"
 
 PROVIDES := "${PN}"
 DEBIAN_PROVIDES := "${PN}"
