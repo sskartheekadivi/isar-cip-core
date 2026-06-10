@@ -20,6 +20,7 @@ S = "${WORKDIR}/optee_os-${PV}"
 OPTEE_NAME = "ti-k3"
 OPTEE_PLATFORM:ti-am62px-sk = "k3-am62px"
 OPTEE_PLATFORM:ti-am62x-sk = "k3-am62x"
+OPTEE_PLATFORM:ti-am64x-sk = "k3-am64x"
 OPTEE_EXTRA_BUILDARGS += " \
 	CFG_ARM64_core=y \
 	CFG_USER_TA_TARGETS=ta_arm64 \
