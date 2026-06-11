@@ -1,1 +1,0 @@
-linux-cip_6.12.90-cip24.bb
