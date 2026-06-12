@@ -232,6 +232,23 @@ config KAS_INCLUDE_KERNEL_RT
 	default "kas/opt/rt.yml"
 	depends on KERNEL_RT
 
+choice
+	prompt "Kernel source"
+	depends on KERNEL_6_12 && (TARGET_TI_AM62X_SK || TARGET_TI_AM62PX_SK || TARGET_TI_AM64X_SK)
+	default KERNEL_SOURCE_CIP
+
+config KERNEL_SOURCE_CIP
+	bool "Standard CIP"
+
+config KERNEL_SOURCE_TI_CIP
+	bool "TI CIP fork"
+
+endchoice
+
+config KAS_INCLUDE_KERNEL_SOURCE
+	string
+	default "kas/opt/kernel-source-ti-cip.yml" if KERNEL_SOURCE_TI_CIP
+
 if HAS_OPTEE
 
 comment "Firmware options"
