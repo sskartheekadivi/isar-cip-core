@@ -18,6 +18,9 @@ CIP_IMAGE_OPTIONS ?= ""
 IMAGER_BUILD_DEPS:append:bullseye = " dosfstools-native"
 IMAGER_BUILD_DEPS:append:bookworm = " dosfstools-native"
 
+PREFERRED_VERSION_linux-cip ??= "6.12.%"
+PREFERRED_VERSION_linux-cip-rt ??= "6.12.%"
+
 PREFERRED_VERSION_linux-cip-native ?= "${PREFERRED_VERSION_linux-cip}"
 PREFERRED_VERSION_linux-cip-kbuildtarget ?= "${PREFERRED_VERSION_linux-cip}"
 
