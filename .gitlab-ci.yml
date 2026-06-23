@@ -63,6 +63,7 @@ default:
     - if [ "${release}" = "bullseye" ]; then base_yaml="${base_yaml}:kas/opt/bullseye.yml"; fi
     - if [ "${release}" = "bookworm" ]; then base_yaml="${base_yaml}:kas/opt/bookworm.yml"; fi
     - if [ "${release}" = "trixie" ]; then base_yaml="${base_yaml}:kas/opt/trixie.yml"; fi
+    - if [ "${release}" = "sid" ]; then base_yaml="${base_yaml}:kas/opt/sid.yml"; fi
     - if [ "${encrypt}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/encrypt-data.yml"; fi
     - if [ "${factory_reset}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/factory-reset.yml"; fi
     - if [ "${watchdog}" = "disable" ]; then base_yaml="${base_yaml}:kas/opt/disable-watchdog.yml"; fi
@@ -346,6 +347,57 @@ build:qemu-amd64-secure-boot-buster:
     extension: ebg-secure-boot-snakeoil
     use_rt: disable
     encrypt: enable
+
+# sid image builds
+.build_base_sid:
+  extends:
+    - .build_base
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_RUN_UNSTABLE_SID'
+    - if: $CI_COMMIT_BRANCH != "master"
+      when: never
+  allow_failure: true
+
+build:qemu-amd64-base-sid:
+  extends:
+    - .build_base_sid
+  variables:
+    target: qemu-amd64
+    use_rt: disable
+    release: sid
+    extension: security
+    security_test: enable
+    build_updates: enable
+    separate_home_partition: enable
+    deploy: enable
+
+build:qemu-arm64-base-sid:
+  extends:
+    - .build_base_sid
+  variables:
+    target: qemu-arm64
+    use_rt: disable
+    release: sid
+    extension: security
+    security_test: enable
+    build_updates: enable
+    separate_home_partition: enable
+    deploy: enable
+
+build:qemu-arm-base-sid:
+  extends:
+    - .build_base_sid
+  variables:
+    target: qemu-arm
+    extension: security
+    security_test: enable
+    use_rt: disable
+    release: sid
+    build_updates: enable
+    separate_home_partition: enable
+    deploy: enable
 
 .test-cip-core:
   stage: test
@@ -670,6 +722,44 @@ test:qemu-arm-swupdate-apply-same-image-swu:
   variables:
     target: qemu-arm
     test_function: swupdate-apply-same-image-swu
+
+# Tests for unstable(sid) images
+.test-cip-core-sid:
+  extends:
+    - .test-cip-core
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_RUN_UNSTABLE_SID'
+    - if: $CI_COMMIT_BRANCH != "master"
+      when: never
+  allow_failure: true
+
+test:qemu-amd64-IEC-sid:
+  extends:
+   - .test-cip-core-sid
+  variables:
+    target: qemu-amd64
+    test_function: IEC
+    iec_test_timeout: 40
+
+test:qemu-arm64-IEC-sid:
+  extends:
+   - .test-cip-core-sid
+  needs: ["build:qemu-arm64-base-sid"]
+  variables:
+    target: qemu-arm64
+    test_function: IEC
+    iec_test_timeout: 40
+
+test:qemu-arm-IEC-sid:
+  extends:
+   - .test-cip-core-sid
+  needs: ["build:qemu-arm-base-sid"]
+  variables:
+    target: qemu-arm
+    test_function: IEC
+    iec_test_timeout: 40
 
 cve-checks:
   stage: cve-check
