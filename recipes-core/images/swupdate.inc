@@ -59,7 +59,7 @@ IMAGE_PREINSTALL:append = "${@'' if bb.utils.to_boolean(d.getVar('SWUPDATE_SELFB
 
 WFX_URL ??= ""
 # check for wfx url to enable support for wfx backend based updates
-IMAGE_INSTALL:append = "${@' swupdate-config-wfx' if d.getVar("WFX_URL") else ''}"
+IMAGE_INSTALL:append = "${@' swupdate-config-wfx-' + d.getVar("MACHINE") if d.getVar("WFX_URL") else ''}"
 
 IMAGE_INSTALL += " swupdate-handler-roundrobin"
-IMAGE_INSTALL += " swupdate-config"
+IMAGE_INSTALL += " swupdate-config-${MACHINE}"
