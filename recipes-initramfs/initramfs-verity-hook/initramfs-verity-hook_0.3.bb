@@ -12,6 +12,7 @@
 inherit initramfs-hook
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Initramfs hook for mounting dm-verity protected root filesystems"
 
 SRC_URI += " \
     file://hook \

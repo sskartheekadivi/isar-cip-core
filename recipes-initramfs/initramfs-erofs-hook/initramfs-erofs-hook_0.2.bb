@@ -12,5 +12,6 @@
 inherit initramfs-hook
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Initramfs hook that adds EROFS filesystem support during early boot"
 
 HOOK_ADD_MODULES = "erofs"

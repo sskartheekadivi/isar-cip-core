@@ -11,6 +11,8 @@
 
 inherit dpkg-gbp
 
+DPKG_ARCH = "all"
+
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
 
 SRC_URI += " \

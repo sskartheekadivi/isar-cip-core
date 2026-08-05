@@ -11,6 +11,7 @@
 inherit dpkg-raw
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Systemd unit to mount a dedicated /home filesystem"
 
 SRC_URI = "file://postinst \
            file://home.mount"

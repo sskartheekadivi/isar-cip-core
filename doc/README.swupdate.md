@@ -192,7 +192,7 @@ Then build the image which will later serve as update package:
 ```
 host$ ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu.yml
 ```
-Save the generated swu `build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-bullseye-qemu-amd64.swu` into a separate folder (ex: /tmp).
+Save the generated swu `build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-trixie-qemu-amd64.swu` into a separate folder (ex: /tmp).
 
 Next, rebuild the image, switching to the RT kernel as modification:
 ```
@@ -201,12 +201,12 @@ host$ ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu
 
 Now start the image which will contain the RT kernel:
 ```
-host$ SWUPDATE_BOOT=y ./start-qemu.sh amd64
+host$ DISTRO_RELEASE=trixie SWUPDATE_BOOT=y ./start-qemu.sh amd64
 ```
 
-Copy `cip-core-image-cip-core-bullseye-qemu-amd64.swu` file from `tmp` folder into the running system:
+Copy `cip-core-image-cip-core-trixie-qemu-amd64.swu` file from `tmp` folder into the running system:
 ```
-host$ scp -P 22222 /tmp/cip-core-image-cip-core-bullseye-qemu-amd64.swu root@localhost:
+host$ scp -P 22222 /tmp/cip-core-image-cip-core-trixie-qemu-amd64.swu root@localhost:
 ```
 
 ## SWUpdate verification
@@ -214,28 +214,27 @@ host$ scp -P 22222 /tmp/cip-core-image-cip-core-bullseye-qemu-amd64.swu root@loc
 Check which partition is booted, e.g. with lsblk:
 ```
 root@demo:~# lsblk
-NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda      8:0    0    6G  0 disk
-├─sda1   8:1    0 16.1M  0 part
-├─sda2   8:2    0   32M  0 part
-├─sda3   8:3    0   32M  0 part
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda      8:0    0  2.8G  0 disk
+├─sda1   8:1    0   16M  0 part /boot
+├─sda2   8:2    0  128M  0 part
+├─sda3   8:3    0  128M  0 part
 ├─sda4   8:4    0    1G  0 part /
 ├─sda5   8:5    0    1G  0 part
-├─sda6   8:6    0  1.3G  0 part /home
-└─sda7   8:7    0  2.6G  0 part /var
+└─sda6   8:6    0  512M  0 part /var
 ```
 
-Also check that you are running the RT kernel:
+Also check that you are running the RT kernel (i.e PREEMPT_RT):
 ```
 root@demo:~# uname -a
-Linux demo 4.19.233-cip69-rt24 #1 SMP PREEMPT RT Tue Apr 12 09:23:51 UTC 2022 x86_64 GNU/Linux
+Linux demo 6.12.85-cip22 #1 SMP PREEMPT_RT Thu, 01 Jan 1970 06:30:00 +0530 x86_64 GNU/Linux
 root@demo:~# ls /lib/modules
-4.19.233-cip69-rt24
+6.12.85-cip22
 ```
 
 Now apply swupdate and reboot
 ```
-root@demo:~# swupdate -i cip-core-image-cip-core-bullseye-qemu-amd64.swu
+root@demo:~# swupdate -i cip-core-image-cip-core-trixie-qemu-amd64.swu
 root@demo:~# reboot
 ```
 Use the `-v` flag when running swupdate for verbose logs of any errors.
@@ -243,23 +242,22 @@ Use the `-v` flag when running swupdate for verbose logs of any errors.
 Check which partition is booted, e.g. with lsblk and the rootfs should have changed
 ```
 root@demo:~# lsblk
-NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda      8:0    0    6G  0 disk
-├─sda1   8:1    0 16.1M  0 part
-├─sda2   8:2    0   32M  0 part
-├─sda3   8:3    0   32M  0 part
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda      8:0    0  2.8G  0 disk
+├─sda1   8:1    0   16M  0 part /boot
+├─sda2   8:2    0  128M  0 part
+├─sda3   8:3    0  128M  0 part
 ├─sda4   8:4    0    1G  0 part
 ├─sda5   8:5    0    1G  0 part /
-├─sda6   8:6    0  1.3G  0 part /home
-└─sda7   8:7    0  2.6G  0 part /var
+└─sda6   8:6    0  512M  0 part /var
 ```
 
 Check the active kernel:
 ```
 root@demo:~# uname -a
-Linux demo 4.19.235-cip70 #1 SMP Tue Apr 12 09:08:39 UTC 2022 x86_64 GNU/Linux
+Linux demo 6.12.85-cip22 #1 SMP PREEMPT_DYNAMIC Thu, 01 Jan 1970 06:30:00 +0530 x86_64 GNU/Linux
 root@demo:~# ls /lib/modules
-4.19.235-cip70
+6.12.85-cip22
 ```
 
 Check bootloader ustate after swupdate
@@ -272,7 +270,7 @@ in_progress:      no
 revision:         2
 kernel:           C:BOOT0:linux.efi
 kernelargs:
-watchdog timeout: 60 seconds
+watchdog timeout: 120 seconds
 ustate:           0 (OK)
 
 user variables:
@@ -285,7 +283,7 @@ in_progress:      no
 revision:         3
 kernel:           C:BOOT1:linux.efi
 kernelargs:
-watchdog timeout: 60 seconds
+watchdog timeout: 120 seconds
 ustate:           2 (TESTING)
 
 user variables:
@@ -305,7 +303,7 @@ Build the image for swupdate with a service which causes kernel panic during sys
 ```
 host$ ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu.yml:kas/opt/kernel-panic.yml
 ```
-Save the generated swu `build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-bullseye-qemu-amd64.swu` in a separate folder.
+Save the generated swu `build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-trixie-qemu-amd64.swu` in a separate folder.
 Then build the image without `kernel-panic.yml` recipe using below command:
 ```
 host$ ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu.yml
@@ -313,17 +311,17 @@ host$ ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu
 
 Start the target on QEMU:
 ```
-host$ SWUPDATE_BOOT=y ./start-qemu.sh amd64
+host$ DISTRO_RELEASE=trixie SWUPDATE_BOOT=y ./start-qemu.sh amd64
 ```
 
-Copy `cip-core-image-cip-core-bullseye-qemu-amd64.swu` file from `tmp` folder into the running system:
+Copy `cip-core-image-cip-core-trixie-qemu-amd64.swu` file from `tmp` folder into the running system:
 ```
-host$ scp -P 22222 /tmp/cip-core-image-cip-core-bullseye-qemu-amd64.swu root@localhost:
+host$ scp -P 22222 /tmp/cip-core-image-cip-core-trixie-qemu-amd64.swu root@localhost:
 ```
 
 Apply swupdate as below:
 ```
-root@demo:~# swupdate -i cip-core-image-cip-core-bullseye-qemu-amd64.swu
+root@demo:~# swupdate -i cip-core-image-cip-core-trixie-qemu-amd64.swu
 ```
 
 Check bootloader ustate after swupdate. If the swupdate is successful then **revision number** should be **3** and status should be changed to **INSTALLED** for Partition #1.
@@ -336,7 +334,7 @@ in_progress:      no
 revision:         2
 kernel:           C:BOOT0:linux.efi
 kernelargs:
-watchdog timeout: 60 seconds
+watchdog timeout: 120 seconds
 ustate:           0 (OK)
 
 user variables:
@@ -349,7 +347,7 @@ in_progress:      no
 revision:         3
 kernel:           C:BOOT1:linux.efi
 kernelargs:
-watchdog timeout: 60 seconds
+watchdog timeout: 120 seconds
 ustate:           1 (INSTALLED)
 
 user variables:
@@ -377,7 +375,7 @@ in_progress:      no
 revision:         2
 kernel:           C:BOOT0:linux.efi
 kernelargs:
-watchdog timeout: 60 seconds
+watchdog timeout: 120 seconds
 ustate:           0 (OK)
 
 user variables:
@@ -390,7 +388,7 @@ in_progress:      no
 revision:         0
 kernel:           C:BOOT1:linux.efi
 kernelargs:
-watchdog timeout: 60 seconds
+watchdog timeout: 120 seconds
 ustate:           3 (FAILED)
 
 user variables:
@@ -419,7 +417,7 @@ The build system looks for the reference artifact in a directory named `previous
 Copy the reference artifacts to the mentioned directory with the following commands:
 ```
 mkdir -p build-v2/previous-image
-cp build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-bookworm-qemu-amd64.squashfs build-v2/previous-image
+cp build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-trixie-qemu-amd64.squashfs build-v2/previous-image
 cp build/tmp/deploy/images/qemu-amd64/linux.efi build-v2/previous-image
 ```
 Build the second image with `build-v2` as the build directory with the following command:
@@ -428,25 +426,25 @@ KAS_BUILD_DIR=build-v2 ./kas-container build kas-cip.yml:kas/board/qemu-amd64.ym
 ```
 Now start the first image. Run the following commands:
 ```
-host$ DISTRO_RELEASE=bookworm SWUPDATE_BOOT=y ./start-qemu.sh amd64
+host$ DISTRO_RELEASE=trixie SWUPDATE_BOOT=y ./start-qemu.sh amd64
 ```
-Copy `cip-core-image-cip-core-bookworm-qemu-amd64.swu` file from `build-v2/tmp/deploy/images/qemu-amd64/` folder into the running system:
+Copy `cip-core-image-cip-core-trixie-qemu-amd64.swu` file from `build-v2/tmp/deploy/images/qemu-amd64/` folder into the running system:
 ```
 host$ cd build-v2/tmp/deploy/images/qemu-amd64/
-host$ scp -P 22222 ./cip-core-image-cip-core-bookworm-qemu-amd64.swu root@localhost:
+host$ scp -P 22222 ./cip-core-image-cip-core-trixie-qemu-amd64.swu root@localhost:
 ```
 
 ## Delta Software Update using zchunk handler
 
 Currently zchunk based delta updates are supported only in trixie images. Make sure to build the first image with trixie as the distribution with the following command:
 ```
-host$ ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu.yml:kas/opt/trixie.yml
+host$ ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu.yml
 ```
 For Delta update with zchunk, set the variable `DELTA_ZCK_URL` with the URL of the zck file that is hosted in a http server and set the `DELTA_UPDATE_TYPE` to `zchunk` in `delta-update.yml` file.
 
 Build the second image with the modification as shown above with the following command:
 ```
-KAS_BUILD_DIR=build-v2 ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu.yml:kas/opt/trixie.yml:kas/opt/delta-update.yml
+KAS_BUILD_DIR=build-v2 ./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-swu.yml:kas/opt/delta-update.yml
 ```
 Now start the first image. Run the following commands:
 ```
@@ -520,7 +518,7 @@ Next, rebuild the image using the Kconfig menu, switching to the RT kernel as mo
 
 Now start the image which will contain the RT kernel:
 ```
-host$ SWUPDATE_BOOT=y ./start-qemu.sh amd64
+host$ DISTRO_RELEASE=trixie SWUPDATE_BOOT=y ./start-qemu.sh amd64
 ```
 
 By default, SWUpdate uses the machine-id from `/etc/machine-id` as the `client-id` (configurable via `WFX_DEVICE_ID` in the `swupdate-config-wfx` recipe). This `client-id` is later used to create `wfx` job for the client:
@@ -604,14 +602,14 @@ Follow the steps mentioned in the section [Building and testing the CIP Core ima
 
 Flash the BeagleBone Black RT kernel image into SDcard
 ```
-host$ dd if=build/tmp/deploy/images/bbb/cip-core-image-cip-core-bullseye-bbb.wic \
+host$ dd if=build/tmp/deploy/images/bbb/cip-core-image-cip-core-trixie-bbb.wic \
    of=/dev/<medium-device> bs=1M status=progress
 ```
 
 After flashing the BBB RT kernel image into SD card, mount the SD card on host PC and copy .swu file from `tmp` folder to root partition like below.
 
 ```
-host$ sudo cp tmp/cip-core-image-cip-core-bullseye-bbb.swu /<mnt>/home/root/
+host$ sudo cp tmp/cip-core-image-cip-core-trixie-bbb.swu /<mnt>/root/
 ```
 
 Connect a serial port cable between host PC and BBB.

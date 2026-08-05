@@ -20,6 +20,9 @@ INITRAMFS_FACTORY_RESET_LUKS_FORMAT_TYPE ??= "ext4"
 INITRAMFS_FACTORY_RESET_CLEAR_TPM ??= '0'
 INITRAMFS_FACTORY_RESET_CLEAR_TPM:encrypt-partitions ?= '1'
 
+# to support factory reset on btrfs, add 'btrfs'
+INITRAMFS_FACTORY_RESET_FSTYPES = "${INITRAMFS_FACTORY_RESET_LUKS_FORMAT_TYPE}"
+
 SRC_URI += " \
     file://factory-reset-script.tmpl \
     file://reset-env.tmpl \
@@ -35,13 +38,17 @@ TEMPLATE_VARS += " INITRAMFS_FACTORY_RESET_DEVICES \
 RDEPENDS = "factory-reset-helper \
             initramfs-cip-functions"
 
-DEBIAN_DEPENDS .= ", coreutils, util-linux, e2fsprogs, btrfs-progs, awk, \
+DEBIAN_DEPENDS .= ", coreutils, util-linux, e2fsprogs, awk, \
                     factory-reset-helper, findutils, initramfs-cip-functions"
 DEBIAN_DEPENDS:append:encrypt-partitions = ", tpm2-tools"
-HOOK_COPY_EXECS = "mountpoint findmnt mktemp rmdir basename \
-                   mke2fs mkfs.btrfs awk blkid rm get-factory-reset.sh \
+HOOK_COPY_EXECS = "mountpoint findmnt mktemp basename \
+                   mke2fs awk blkid rm get-factory-reset.sh \
                    chattr grep find"
 HOOK_COPY_EXECS:append:encrypt-partitions = " tpm2_clear"
+
+OVERRIDES .= "${@':btrfs-support' if 'btrfs' in d.getVar('INITRAMFS_FACTORY_RESET_FSTYPES') else ''}"
+DEBIAN_DEPENDS:append:btrfs-support = ", btrfs-progs"
+HOOK_COPY_EXECS:append:btrfs-support = " mkdir rmdir mkfs.btrfs"
 
 HOOK_ADD_MODULES = "efivarfs"
 

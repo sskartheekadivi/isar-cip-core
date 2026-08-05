@@ -48,7 +48,7 @@ Supply the script name and path to wic by adding
 #### secure-boot-snakeoil
 
 This package uses the snakeoil key and certificate from the ovmf package from
-Debian bullseye or later for signing the image.
+Debian trixie or later for signing the image.
 
 #### secure-boot-key
 
@@ -66,10 +66,10 @@ Set up a secure boot test environment with [QEMU](https://www.qemu.org/)
 
 ### Prerequisites
 
-- OVMF from edk2 release edk2-stable201911 or newer
-  - This documentation was tested under Debian 11 with OVMF (2020.11-2+deb11u1) from Debian bullseye
+- OVMF from edk2 release 2025.02-8+deb13u1 or newer
+  - This documentation was tested under Debian 13 with OVMF (2025.02-8+deb13u1) from Debian trixie
 - efitools for KeyTool.efi
-  - This documentation was tested under Debian 11 with efitools (1.9.2-2~deb11u1) from Debian bullseye
+  - This documentation was tested under Debian 13 with efitools (1.9.2-3.5) from Debian trixie
 - libnss3-tools
 
 ### Debian Snakeoil keys
@@ -144,7 +144,7 @@ Build the image with a signed EFI Boot Guard and unified kernel image
 with the snakeoil keys by executing:
 
 ```bash
-kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-secure-boot-snakeoil.yml
+./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/trixie.yml:kas/opt/ebg-secure-boot-snakeoil.yml
 ```
 
 For user-generated keys, create a new option file in the repository. This option file could look like this:
@@ -186,7 +186,7 @@ need to stored in the folder `recipes-devtools/secure-boot-secrets/files`.
 Build the image with user-generated keys by executing the command:
 
 ```bash
-kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:<path to the new option>.yml
+./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/trixie.yml:<path to the new option>.yml
 ```
 
 ### Start the image
@@ -196,22 +196,14 @@ kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:<path to the new option
 Start the image with the following command:
 
 ```bash
-SECURE_BOOT=y \
+DISTRO_RELEASE=trixie SECURE_BOOT=y \
 ./start-qemu.sh amd64
 ```
-
-The image configuration menu will set default values for start-qemu.sh for secureboot
-and the following command is sufficient:
-
-```bash
-./start-qemu.sh amd64
-```
-
 #### User-generated keys
 Start the image with the following command:
 
 ```bash
-SECURE_BOOT=y \
+DISTRO_RELEASE=trixie SECURE_BOOT=y \
 OVMF_CODE=./build/tmp/deploy/images/qemu-amd64/OVMF/OVMF_CODE_4M.secboot.fd \
 OVMF_VARS=<path to the modified OVMF_VARS.fd> \
 ./start-qemu.sh amd64
@@ -233,62 +225,47 @@ EFI stub: UEFI Secure Boot is enabled.
 
 For updating the image, the following steps are necessary:
 - [Build the image with snakeoil keys](#build-image)
-- save the generated swu `build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-bullseye-qemu-amd64.swu` to /tmp
+- save the generated swu `build/tmp/deploy/images/qemu-amd64/cip-core-image-cip-core-trixie-qemu-amd64.swu` to /tmp
 - modify the image for example, switch to the RT kernel as modification:
 
 ```bash
-kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/ebg-secure-boot-snakeoil.yml:kas/opt/rt.yml
+./kas-container build kas-cip.yml:kas/board/qemu-amd64.yml:kas/opt/trixie.yml:kas/opt/ebg-secure-boot-snakeoil.yml:kas/opt/rt.yml
 ```
 
 - start the new target
 
 ```bash
-SECURE_BOOT=y ./start-qemu.sh amd64
+DISTRO_RELEASE=trixie SECURE_BOOT=y \
+./start-qemu.sh amd64
 ```
 
-Copy the swu cip-core-image-cip-core-bullseye-qemu-amd64.swu to the running system
+Copy the swu cip-core-image-cip-core-trixie-qemu-amd64.swu to the running system
 
 ```bash
-scp -P 22222 /tmp/cip-core-image-cip-core-bullseye-qemu-amd64.swu root@127.0.0.1:/home/
+scp -P 22222 /tmp/cip-core-image-cip-core-trixie-qemu-amd64.swu root@127.0.0.1:/
 ```
 
-- check which partition is booted, e.g. with `lsblk`:
+- check which is the root partition and it should be `/dev/sda4`
 
 ```bash
-root@demo:~# lsblk
-NAME           MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINT
-sda              8:0    0     6G  0 disk
-├─sda1           8:1    0  16.1M  0 part
-├─sda2           8:2    0    32M  0 part
-├─sda3           8:3    0    32M  0 part
-├─sda4           8:4    0     1G  0 part
-│ └─verityroot 252:0    0 110.9M  1 crypt /
-├─sda5           8:5    0     1G  0 part
-├─sda6           8:6    0   1.3G  0 part  /home
-└─sda7           8:7    0   2.6G  0 part  /var
+root@demo:~# ls -l /sys/block/dm-0/slaves/
+total 0
+lrwxrwxrwx 1 root root 0 Jun 30 12:56 sda4 -> ../../../../pci0000:00/0000:00:1f.2/ata6/host5/target5:0:0/5:0:0:0/block/sda/sda4
 ```
 
 - install the swupdate and reboot the image
 
 ```bash
-root@demo:~# swupdate -i /home/cip-core-image-cip-core-bullseye-qemu-amd64.swu`
+root@demo:~# swupdate -i cip-core-image-cip-core-trixie-qemu-amd64.swu
 root@demo:~# reboot
 ```
 
-- check which partition is booted, e.g. with `lsblk`. The rootfs should have changed:
+- check which is the root partition now, the rootfs should have changed (i.e `/dev/sda5`):
 
 ```bash
-root@demo:~# lsblk
-NAME           MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINT
-sda              8:0    0     6G  0 disk
-├─sda1           8:1    0  16.1M  0 part
-├─sda2           8:2    0    32M  0 part
-├─sda3           8:3    0    32M  0 part
-├─sda4           8:4    0     1G  0 part
-├─sda5           8:5    0     1G  0 part
-│ └─verityroot 252:0    0 110.9M  1 crypt /
-├─sda6           8:6    0   1.3G  0 part  /home
-└─sda7           8:7    0   2.6G  0 part  /var
+root@demo:~# ls -l /sys/block/dm-0/slaves/
+total 0
+lrwxrwxrwx 1 root root 0 Jun 30 13:20 sda5 -> ../../../../pci0000:00/0000:00:1f.2/ata6/host5/target5:0:0/5:0:0:0/block/sda/sda5
 ```
 
 ## Secure boot on Generic UEFI x86

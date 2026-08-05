@@ -14,9 +14,6 @@ LAVA_TEMPLATES="tests/templates"
 LAVA_JOBS_URL="https://${CIP_LAVA_LAB_SERVER:-lava.ciplatform.org}/scheduler/job"
 LAVA_API_URL="https://$CIP_LAVA_LAB_USER:$CIP_LAVA_LAB_TOKEN@${CIP_LAVA_LAB_SERVER:-lava.ciplatform.org}/api/v0.2"
 LAVACLI_ARGS="--uri https://$CIP_LAVA_LAB_USER:$CIP_LAVA_LAB_TOKEN@${CIP_LAVA_LAB_SERVER:-lava.ciplatform.org}/RPC2"
-SQUAD_GROUP="cip-core"
-SQUAD_WATCH_JOBS_URL="${CIP_SQUAD_URL}/api/watchjob"
-SQUAD_LAVA_BACKEND="${CIP_SQUAD_LAVA_BACKEND:-cip}"
 PROJECT_URL="https://s3.eu-central-1.amazonaws.com/download2.cip-project.org/cip-core"
 
 WORK_DIR=$(pwd)
@@ -235,48 +232,6 @@ create_job_mcom () {
 	    -i "${job_dir}/${1}_${2}.yml"
 }
 
-# This method attaches SQUAD watch job to the submitted LAVA job
-# $1: LAVA Job ID
-submit_squad_watch_job(){
-# SQUAD watch job submission
-	local ret
-	if [ -z ${CIP_SQUAD_LAB_TOKEN+x} ]; then
-		echo "SQUAD_LAB_TOKEN not found, omitting SQUAD results reporting!"
-		return 0
-	fi
-
-	if [ "$TEST" = "swupdate" ] || [ "$TEST" = "kernel-panic" ] || [ "$TEST" = "initramfs-crash" ]; then
-		SQUAD_PROJECT="swupdate-testing"
-	elif [ "$TEST" = "secure-boot" ]; then
-		SQUAD_PROJECT="secure-boot-testing"
-	elif [ "$TEST" = "IEC" ]; then
-		SQUAD_PROJECT="iec-layer-testing"
-	else
-		echo "Unable to host results in available CIP Core SQUAD projects"
-		return 1
-	fi
-
-	local ENV="${SQUAD_PROJECT}_${TARGET}"
-	local squad_url="$SQUAD_WATCH_JOBS_URL/${SQUAD_GROUP}/${SQUAD_PROJECT}/${COMMIT_REF}/${ENV}"
-	ret=$(curl -s \
-		--header "Authorization: token $CIP_SQUAD_LAB_TOKEN" \
-		--form backend="$SQUAD_LAVA_BACKEND" \
-		--form testjob_id="$1" \
-		--form metadata='{"device": "'"${DEVICE}"'", "CI pipeline": "'"${CI_PIPELINE_URL}"'", "CI job": "'"${CI_JOB_URL}"'"}' \
-		"$squad_url")
-
-	if [[ $ret != [0-9]* ]]
-	then
-		echo "Something went wrong with SQUAD watch job submission. SQUAD returned:"
-		echo "${ret}"
-		echo "SQUAD URL: ${squad_url}"
-		echo "SQUAD Backend: ${SQUAD_LAVA_BACKEND}"
-		echo "LAVA Job Id: $1"
-	else
-		echo "SQUAD watch job submitted successfully as #${ret}."
-	fi
-}
-
 # $1: Job definition file
 submit_job() {
         # First check if respective device is online
@@ -305,8 +260,6 @@ submit_job() {
 			DEVICE=$(grep "device      :" "$lavacli_output" \
 				| cut -d ":" -f 2 \
 				| awk '{$1=$1};1')
-
-			submit_squad_watch_job "${ret}"
 
 			# shellcheck disable=2086
 			lavacli $LAVACLI_ARGS jobs logs "${ret}"

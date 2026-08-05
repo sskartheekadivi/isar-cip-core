@@ -51,3 +51,12 @@ root@demo:~# reboot
 ```
 root@demo:~# find /var -name "to-be-deleted"
 ```
+
+## Use cases
+
+- The primary use case is resetting data partitions (e.g. `/home` and `/var`). This also resets any configuration changes made under `/etc`, since the read-write overlay for /etc is currently backed by /var.
+- If the `/etc` RW overlay is backed by a dedicated partition (separate from `/home` or `/var`), that partition can be formatted independently to restore default configurations (included at build time).
+
+## Relevance to IEC 62443-4-2
+
+- Factory reset feature helps meet requirements under CR 4.2 Information Persistence. Refer [here](https://gitlab.com/cip-project/cip-documents/-/blob/master/iec-62443-assessment/iec-62443-4-2/iec-62443-4-2-fr-4-fr-5.rst?ref_type=heads#id12) for more details on how the requirement is met.

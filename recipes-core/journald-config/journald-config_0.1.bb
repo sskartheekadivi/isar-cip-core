@@ -11,6 +11,7 @@
 inherit dpkg-raw
 
 MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
+DESCRIPTION = "Systemd journald drop-in configuration for persistent journal storage"
 
 SRC_URI = "file://persistent-journal.conf"
 
