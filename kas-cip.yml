@@ -15,16 +15,23 @@ header:
 distro: cip-core-trixie
 target: cip-core-image
 
-build_system: isar
+build_system: isar-rootless
 
 repos:
   cip-core:
 
   isar:
     url: https://github.com/ilbers/isar.git
-    commit: 3c645ee8dcd3d2161b93a3b2f9808fe1829850e7
+    commit: 1d8791f5ea178bc31ba2ff3c211ef5030f542c13
     layers:
       meta:
+    patches:
+      p1:
+        repo: cip-core
+        path: isar-patches/0001-isar-mounts-mount-run-as-tmpfs-for-systemd-execution.patch
+      p2:
+        repo: cip-core
+        path: isar-patches/0002-image-postproc-extension-fix-machine-id-file-being-w.patch
 
 bblayers_conf_header:
   standard: |

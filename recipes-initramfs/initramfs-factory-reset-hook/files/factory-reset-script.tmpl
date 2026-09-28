@@ -2,7 +2,7 @@
 #
 # CIP Core, generic profile
 #
-# Copyright (c) Siemens AG, 2025
+# Copyright (c) Siemens AG, 2025 - 2026
 #
 # Authors:
 #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
@@ -17,7 +17,7 @@ check_partitions()
 {
     found=0
     for partition in ${INITRAMFS_FACTORY_RESET_DEVICES}; do
-        if blkid | grep -q "$(basename $partition)"; then
+        if blkid | grep -q "$(basename "$partition")"; then
             found=$((found + 1))
         fi
     done
@@ -33,22 +33,27 @@ wait_30sec_for_condition check_partitions
 
 if /usr/sbin/get-factory-reset.sh --delete | grep -q "factory-reset"; then
     log_begin_msg "Factory Reset"
+    # service watchdog in the background during lengthy disk wiping
+    start_watchdog "${WATCHDOG_DEV}" "${SETUP_TIMEOUT}"
     for target in ${target_devices}; do
-        log_begin_msg "Reset device: $target"
-        fs_type=$(get_fstype "${target}")
-        case "$target" in
+        wipedisk="false"
+        target_device="$target"
+        log_begin_msg "Reset device: $target_device"
+        fs_type=$(get_fstype "${target_device}")
+        case "$target_device" in
             *by-partlabel*)
-                label="$(basename "${target}" )"
+                label="$(basename "${target_device}" )"
                 ;;
             *)
-                label=$(blkid --match-tag LABEL "$target" | awk -F= '{gsub(/"/,"");print $2}' )
+                label=$(blkid --match-tag LABEL "$target_device" | awk -F= '{gsub(/"/,"");print $2}' )
                 if [ -z "${label}" ]; then
-                    log_warning_msg "Could not find any label  for target '$target'"
+                    log_warning_msg "Could not find any label for target '$target_device'"
                 fi
                 ;;
         esac
+
         if [ "$fs_type" = "luks" ]; then
-            if [ -n "${INITRAMFS_FACTORY_RESET_CLEAR_TPM}" ]; then
+            if [ "${INITRAMFS_FACTORY_RESET_CLEAR_TPM_BOOL}" = "1" ]; then
                 # after this the data on the encrypted partition
                 # is inaccessible
                 tpm2_clear
@@ -56,23 +61,38 @@ if /usr/sbin/get-factory-reset.sh --delete | grep -q "factory-reset"; then
                 # use a variable from the reset-env to set it
                 fs_type="$INITRAMFS_FACTORY_RESET_LUKS_FORMAT_TYPE"
             else
-                target=$(find /dev/mapper -iname "*$label")
-                fs_type=$(get_fstype "${target}")
-                echo "luks device detected use $target"
+                target_device=$(find /dev/mapper -iname "*$label")
+                fs_type=$(get_fstype "${target_device}")
+                log_success_msg "luks device detected use $target_device"
+                wipedisk="true"
             fi
+        else
+            wipedisk="true"
         fi
+
+        if [ "${wipedisk}" = "true" ]; then
+            log_begin_msg "Clear device $target_device"
+            device_size=$(blockdev --getsz "${target_device}")
+            if ! dd if=/dev/zero of="${target_device}" bs=512 \
+                    count="${device_size}" conv=fsync; then
+                log_warning_msg "Could not clear partition $target_device"
+            fi
+            log_end_msg "Finished clearing device $target_device"
+        fi
+
         case ${fs_type} in
             ext*)
-                /sbin/mke2fs -L "${label}" -F -t ext4 "${target}"
+                /sbin/mke2fs -L "${label}" -F -t ext4 "${target_device}"
                 ;;
             btrfs)
-                /sbin/mkfs.btrfs -L "${label}" --force "${target}"
+                /sbin/mkfs.btrfs -L "${label}" --force "${target_device}"
                 ;;
             *)
                 log_warning_msg "Unrecognized filesystem type ${fs_type} - could not format"
                 ;;
         esac
-        log_end_msg "Reset device: $target"
+        log_end_msg "Reset device: $target_device"
     done
     log_end_msg "Factory Reset"
 fi
+stop_watchdog

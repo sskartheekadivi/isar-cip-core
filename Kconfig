@@ -1,7 +1,7 @@
 #
 # CIP Core, generic profile
 #
-# Copyright (c) Siemens AG, 2021-2025
+# Copyright (c) Siemens AG, 2021-2026
 #
 # Authors:
 #  Jan Kiszka <jan.kiszka@siemens.com>
@@ -17,7 +17,7 @@ config KAS_INCLUDE_MAIN
 
 config KAS_BUILD_SYSTEM
 	string
-	default "isar"
+	default "isar-rootless"
 
 config ARCH_AMD64
 	bool
@@ -137,6 +137,11 @@ config TARGET_BEAGLEV_FIRE
 	select ARCH_RISCV64
 	select HAS_SWUPDATE
 
+config TARGET_RZT2H
+	bool "RZ/T2H EVK"
+	select ARCH_ARM64
+	select HAS_SWUPDATE
+
 endchoice
 
 config KAS_INCLUDE_BOARD
@@ -154,6 +159,7 @@ config KAS_INCLUDE_BOARD
 	default "kas/board/iwg20m.yml" if TARGET_IWG20D
 	default "kas/board/qemu-riscv64.yml" if TARGET_QEMU_RISCV64
 	default "kas/board/beaglev-fire.yml" if TARGET_BEAGLEV_FIRE
+	default "kas/board/rzt2h-evk.yml" if TARGET_RZT2H
 
 comment "Kernel options"
 
@@ -164,31 +170,20 @@ choice
 config KERNEL_4_4
 	bool "Kernel 4.4.x-cip"
 	depends on !ARCH_ARM64 && !ARCH_RISCV64
-	depends on !TARGET_TI_AM62PX_SK
-	depends on !TARGET_TI_AM62X_SK
-	depends on !TARGET_TI_AM64X_SK
 	depends on !DEBIAN_TRIXIE
 
 config KERNEL_4_19
 	bool "Kernel 4.19.x-cip"
 	depends on !ARCH_RISCV64
-	depends on !TARGET_TI_AM62PX_SK
-	depends on !TARGET_TI_AM62X_SK
-	depends on !TARGET_TI_AM64X_SK
+	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_TI_AM64X_SK && !TARGET_RZT2H
 
 config KERNEL_5_10
 	bool "Kernel 5.10.x-cip"
-	depends on !TARGET_TI_AM62PX_SK
-	depends on !TARGET_TI_AM62X_SK
-	depends on !TARGET_TI_AM64X_SK
-	depends on !TARGET_BEAGLEV_FIRE
+	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_TI_AM64X_SK && !TARGET_BEAGLEV_FIRE && !TARGET_RZT2H
 
 config KERNEL_6_1
 	bool "Kernel 6.1.x-cip"
-	depends on !TARGET_TI_AM62PX_SK
-	depends on !TARGET_TI_AM62X_SK
-	depends on !TARGET_TI_AM64X_SK
-	depends on !TARGET_BEAGLEV_FIRE
+	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_TI_AM64X_SK && !TARGET_BEAGLEV_FIRE && !TARGET_RZT2H
 
 config KERNEL_6_12
 	bool "Kernel 6.12.x-cip"
@@ -258,6 +253,7 @@ config FTPM_STMM
 	bool "Use Firmware TPM and rewritable UEFI key storage"
 	depends on IMAGE_SWUPDATE
 	depends on !DEBIAN_BUSTER
+	select HAS_EFIVARS
 
 config KAS_INCLUDE_FTPM_STMM
 	string
@@ -287,6 +283,9 @@ config DEBIAN_BOOKWORM
 config DEBIAN_TRIXIE
 	bool "trixie (13)"
 
+config DEBIAN_FORKY
+	bool "forky (14)"
+
 config DEBIAN_SID
 	bool "Sid (Unstable)"
 
@@ -298,6 +297,7 @@ config KAS_INCLUDE_DEBIAN
 	default "kas/opt/bullseye.yml" if DEBIAN_BULLSEYE
 	default "kas/opt/bookworm.yml" if DEBIAN_BOOKWORM
 	default "kas/opt/trixie.yml" if DEBIAN_TRIXIE
+	default "kas/opt/forky.yml" if DEBIAN_FORKY
 	default "kas/opt/sid.yml" if DEBIAN_SID
 
 comment "Image features"
@@ -387,13 +387,13 @@ config KAS_INCLUDE_DELTA_UPDATE
 
 config IMAGE_DATA_ENCRYPTION
 	bool "Encrypt data partitions on first boot"
-	depends on HAS_DISK_ENCRYPTION
+	depends on HAS_DISK_ENCRYPTION && IMAGE_SECURE_BOOT
 	help
 	  This enables LUKS encryption for the partitions /var and /home.
 
 config IMAGE_FULL_ENCRYPTION
 	bool "Encrypt rootfs and data partitions"
-	depends on HAS_DISK_ENCRYPTION
+	depends on HAS_DISK_ENCRYPTION && IMAGE_SECURE_BOOT
 	select IMAGE_DATA_ENCRYPTION
 	help
 	  This enables LUKS encryption for all non-boot partitions on first boot.

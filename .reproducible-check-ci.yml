@@ -5,6 +5,8 @@
 #
 # Authors:
 #  Venkata Pyla <venkata.pyla@toshiba-tsip.com>
+#  Adithya Balakumar <adithya.balakumar@toshiba-tsip.com>
+#  Shivanand Kunijadar <shivanand.kunijadar@toshiba-tsip.com>
 #
 # SPDX-License-Identifier: MIT
 #
@@ -19,7 +21,7 @@
     extension: security
   stage: build
   tags:
-    - large
+    - large-rootless
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $REPRODUCIBLE_BUILDS
   script:
@@ -37,8 +39,7 @@
     # Deploy .wic, .swu and wic partitions for build1
     - deploy_rb_artifacts build1
     # clean
-    - sudo rm -rf build/tmp
-    - sudo rm -rf build/sstate-cache
+    - kas purge --isar-rootless ${base_yaml}
     # Build 2nd time
     - !reference [.build_base, script]
     # Deploy .wic, .swu and wic partitions for build2
@@ -50,7 +51,7 @@
 
 .repro-test:
   image:
-    name: debian:bullseye
+    name: debian:stable
   tags:
     - large
   stage: test
@@ -130,6 +131,39 @@ build:x86-uefi-repro-build:
   variables:
     target: x86-uefi
 
+# repro build for debian forky
+build:qemu-amd64-repro-build-forky:
+  extends:
+    - .repro-build
+  variables:
+    target: qemu-amd64
+    release: forky
+  allow_failure: true
+
+build:qemu-arm64-repro-build-forky:
+  extends:
+    - .repro-build
+  variables:
+    target: qemu-arm64
+    release: forky
+  allow_failure: true
+
+build:qemu-arm-repro-build-forky:
+  extends:
+    - .repro-build
+  variables:
+    target: qemu-arm
+    release: forky
+  allow_failure: true
+
+build:x86-uefi-repro-build-forky:
+  extends:
+    - .repro-build
+  variables:
+    target: x86-uefi
+    release: forky
+  allow_failure: true
+
 # repro build test
 test:qemu-amd64-repro-test:
   extends:
@@ -166,3 +200,40 @@ test:x86-uefi-repro-test:
   variables:
     target: x86-uefi
   needs: ["build:x86-uefi-repro-build"]
+
+# repro build test for debian forky
+test:qemu-amd64-repro-test-forky:
+  extends:
+    - .repro-test
+  variables:
+    target: qemu-amd64
+    release: forky
+  allow_failure: true
+  needs: ["build:qemu-amd64-repro-build-forky"]
+
+test:qemu-arm64-repro-test-forky:
+  extends:
+    - .repro-test
+  variables:
+    target: qemu-arm64
+    release: forky
+  allow_failure: true
+  needs: ["build:qemu-arm64-repro-build-forky"]
+
+test:qemu-arm-repro-test-forky:
+  extends:
+    - .repro-test
+  variables:
+    target: qemu-arm
+    release: forky
+  allow_failure: true
+  needs: ["build:qemu-arm-repro-build-forky"]
+
+test:x86-uefi-repro-test-forky:
+  extends:
+    - .repro-test
+  variables:
+    target: x86-uefi
+    release: forky
+  allow_failure: true
+  needs: ["build:x86-uefi-repro-build-forky"]

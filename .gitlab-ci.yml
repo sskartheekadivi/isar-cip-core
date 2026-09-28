@@ -1,13 +1,14 @@
 #
 # CIP Core, generic profile
 #
-# Copyright (c) Siemens AG, 2019-2025
+# Copyright (c) Siemens AG, 2019-2026
 # Copyright (c) Toshiba Corporation, 2020
 #
 # Authors:
 #  Jan Kiszka <jan.kiszka@siemens.com>
 #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
 #  Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+#  Shivanand Kunijadar <shivanand.kunijadar@toshiba-tsip.com>
 #
 # SPDX-License-Identifier: MIT
 #
@@ -33,7 +34,7 @@ stages:
   - cve-check
 
 default:
-  image: ghcr.io/siemens/kas/kas-isar:5.2
+  image: ghcr.io/siemens/kas/kas-isar:5.5
   before_script:
     - export http_proxy=$HTTP_PROXY
     - export https_proxy=$HTTPS_PROXY
@@ -52,7 +53,7 @@ default:
       when: never
     - if: $CI_COMMIT_BRANCH != "master"
   tags:
-    - large
+    - large-rootless
   variables:
     base_yaml: "kas-cip.yml:kas/board/${target}.yml"
   script:
@@ -63,6 +64,7 @@ default:
     - if [ "${release}" = "bullseye" ]; then base_yaml="${base_yaml}:kas/opt/bullseye.yml"; fi
     - if [ "${release}" = "bookworm" ]; then base_yaml="${base_yaml}:kas/opt/bookworm.yml"; fi
     - if [ "${release}" = "trixie" ]; then base_yaml="${base_yaml}:kas/opt/trixie.yml"; fi
+    - if [ "${release}" = "forky" ]; then base_yaml="${base_yaml}:kas/opt/forky.yml"; fi
     - if [ "${release}" = "sid" ]; then base_yaml="${base_yaml}:kas/opt/sid.yml"; fi
     - if [ "${encrypt}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/encrypt-data.yml"; fi
     - if [ "${factory_reset}" = "enable" ]; then base_yaml="${base_yaml}:kas/opt/factory-reset.yml"; fi
@@ -121,6 +123,13 @@ build:hihope-rzg2m-base:
   variables:
     target: hihope-rzg2m
     dtb: r8a774a1-hihope-rzg2m-ex.dtb
+
+build:rzt2h-evk-base:
+  extends:
+    - .build_base
+  variables:
+    target: rzt2h-evk
+    dtb: r9a09g077m44-rzt2h-evk.dtb
 
 build:qemu-amd64-base:
   extends:
@@ -195,6 +204,14 @@ build:hihope-rzg2m-test:
     target: hihope-rzg2m
     extension: test
     dtb: r8a774a1-hihope-rzg2m-ex.dtb
+
+build:rzt2h-evk-test:
+  extends:
+    - .build_base
+  variables:
+    target: rzt2h-evk
+    extension: test
+    dtb: r9a09g077m44-rzt2h-evk.dtb
 
 build:qemu-amd64-test-nokernel:
   extends:
@@ -355,7 +372,7 @@ build:qemu-amd64-secure-boot-buster:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_RUN_UNSTABLE_SID'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_RUN_UNSTABLE'
     - if: $CI_COMMIT_BRANCH != "master"
       when: never
   allow_failure: true
@@ -395,6 +412,57 @@ build:qemu-arm-base-sid:
     security_test: enable
     use_rt: disable
     release: sid
+    build_updates: enable
+    separate_home_partition: enable
+    deploy: enable
+
+# forky image builds
+.build_base_forky:
+  extends:
+    - .build_base
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_RUN_UNSTABLE'
+    - if: $CI_COMMIT_BRANCH != "master"
+      when: never
+  allow_failure: true
+
+build:qemu-amd64-base-forky:
+  extends:
+    - .build_base_forky
+  variables:
+    target: qemu-amd64
+    use_rt: disable
+    release: forky
+    extension: security
+    security_test: enable
+    build_updates: enable
+    separate_home_partition: enable
+    deploy: enable
+
+build:qemu-arm64-base-forky:
+  extends:
+    - .build_base_forky
+  variables:
+    target: qemu-arm64
+    use_rt: disable
+    release: forky
+    extension: security
+    security_test: enable
+    build_updates: enable
+    separate_home_partition: enable
+    deploy: enable
+
+build:qemu-arm-base-forky:
+  extends:
+    - .build_base_forky
+  variables:
+    target: qemu-arm
+    extension: security
+    security_test: enable
+    use_rt: disable
+    release: forky
     build_updates: enable
     separate_home_partition: enable
     deploy: enable
@@ -730,7 +798,7 @@ test:qemu-arm-swupdate-apply-same-image-swu:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_RUN_UNSTABLE_SID'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_RUN_UNSTABLE'
     - if: $CI_COMMIT_BRANCH != "master"
       when: never
   allow_failure: true
@@ -740,6 +808,7 @@ test:qemu-amd64-IEC-sid:
    - .test-cip-core-sid
   variables:
     target: qemu-amd64
+    release: sid
     test_function: IEC
     iec_test_timeout: 40
 
@@ -749,6 +818,7 @@ test:qemu-arm64-IEC-sid:
   needs: ["build:qemu-arm64-base-sid"]
   variables:
     target: qemu-arm64
+    release: sid
     test_function: IEC
     iec_test_timeout: 40
 
@@ -758,6 +828,102 @@ test:qemu-arm-IEC-sid:
   needs: ["build:qemu-arm-base-sid"]
   variables:
     target: qemu-arm
+    release: sid
+    test_function: IEC
+    iec_test_timeout: 40
+
+# Tests for forky images
+.test-cip-core-forky:
+  extends:
+    - .test-cip-core
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_RUN_UNSTABLE'
+    - if: $CI_COMMIT_BRANCH != "master"
+      when: never
+  allow_failure: true
+
+test:qemu-amd64-swupdate-forky:
+  extends:
+    - .test-cip-core-forky
+  needs: ["build:qemu-amd64-base-forky"]
+  variables:
+    target: qemu-amd64
+    release: forky
+    test_function: swupdate
+
+test:qemu-arm64-swupdate-forky:
+  extends:
+    - .test-cip-core-forky
+  needs: ["build:qemu-arm64-base-forky"]
+  variables:
+    target: qemu-arm64
+    release: forky
+    test_function: swupdate
+
+test:qemu-arm-swupdate-forky:
+  extends:
+    - .test-cip-core-forky
+  needs: ["build:qemu-arm-base-forky"]
+  variables:
+    target: qemu-arm
+    release: forky
+    test_function: swupdate
+
+test:qemu-amd64-secure-boot-forky:
+  extends:
+    - .test-cip-core-forky
+  needs: ["build:qemu-amd64-base-forky"]
+  variables:
+    target: qemu-amd64
+    release: forky
+    test_function: secure-boot
+
+test:qemu-arm64-secure-boot-forky:
+  extends:
+    - .test-cip-core-forky
+  needs: ["build:qemu-arm64-base-forky"]
+  variables:
+    target: qemu-arm64
+    release: forky
+    test_function: secure-boot
+
+test:qemu-arm-secure-boot-forky:
+  extends:
+    - .test-cip-core-forky
+  needs: ["build:qemu-arm-base-forky"]
+  variables:
+    target: qemu-arm
+    release: forky
+    test_function: secure-boot
+
+test:qemu-amd64-IEC-forky:
+  extends:
+   - .test-cip-core-forky
+  variables:
+    target: qemu-amd64
+    release: forky
+    test_function: IEC
+    iec_test_timeout: 40
+
+test:qemu-arm64-IEC-forky:
+  extends:
+   - .test-cip-core-forky
+  needs: ["build:qemu-arm64-base-forky"]
+  variables:
+    target: qemu-arm64
+    release: forky
+    test_function: IEC
+    iec_test_timeout: 40
+
+test:qemu-arm-IEC-forky:
+  extends:
+   - .test-cip-core-forky
+  needs: ["build:qemu-arm-base-forky"]
+  variables:
+    target: qemu-arm
+    release: forky
     test_function: IEC
     iec_test_timeout: 40
 
@@ -766,7 +932,7 @@ cve-checks:
   needs: []
   image: registry.gitlab.com/cip-project/cip-core/debian-cve-checker:build-latest
   tags:
-    - large
+    - large-rootless
   script:
     - scripts/run-cve-checks.sh
   rules:
@@ -783,11 +949,13 @@ include: '.reproducible-check-ci.yml'
 
 lavacli-container:
   stage: build
-  image: quay.io/buildah/stable:v1.41.4
+  image: quay.io/buildah/stable:v1.43.2
+  variables:
+    STORAGE_DRIVER: vfs
   tags:
-    - large
+    - small
   before_script:
-    - buildah login -u $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - echo $CI_REGISTRY_PASSWORD | buildah login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
     - buildah build -f scripts/Dockerfile.lavacli -t $CI_REGISTRY_IMAGE/lavacli .
     - buildah push $CI_REGISTRY_IMAGE/lavacli
