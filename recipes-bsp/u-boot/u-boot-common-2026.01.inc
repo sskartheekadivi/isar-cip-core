@@ -16,7 +16,7 @@ MAINTAINER = "cip-dev <cip-dev@lists.cip-project.org>"
 FILESPATH:append := ":${FILE_DIRNAME}/files"
 
 SRC_URI += " \
-    https://ftp.denx.de/pub/u-boot/u-boot-${PV}.tar.bz2 \
+    https://git.u-boot-project.org/u-boot/u-boot/-/archive/v${PV}/u-boot-v${PV}.tar.bz2 \
     file://0001-spl-Kconfig-Add-missing-SPL_LOAD_BLOCK-for-SYS_MMCSD.patch \
     file://0002-spl-mmc-Account-for-SYS_MMCSD_RAW_MODE_U_BOOT_USE_PA.patch \
     file://0003-spl-mmc-Respect-sector-value-passed-to-mmc_load_imag.patch \
@@ -34,7 +34,7 @@ SRC_URI += " \
     file://0006-mmc-Call-back-to-optee-after-a-successful-mmc_init.patch \
     file://0007-mmc-Make-MMC-Device-not-found-a-debug-output.patch \
     file://rules.tmpl;subdir=debian"
-SRC_URI[sha256sum] = "b60d5865cefdbc75da8da4156c56c458e00de75a49b80c1a2e58a96e30ad0d54"
+SRC_URI[sha256sum] = "536c2204bb875236dcba41f5a5802090039a4b7a704dd284fcb9640e66a84a8a"
 
 SRC_URI:append:ftpm-stmm = " \
     file://ftpm-stmm.cfg"
@@ -42,7 +42,7 @@ SRC_URI:append:ftpm-stmm = " \
 SRC_URI:append:secureboot = " \
     file://secure-boot.cfg"
 
-S = "${WORKDIR}/u-boot-${PV}"
+S = "${WORKDIR}/u-boot-v${PV}"
 
 DEBIAN_BUILD_DEPENDS += ", libssl-dev:native, libssl-dev:${DISTRO_ARCH}, \
     libgnutls28-dev:native, libgnutls28-dev:${DISTRO_ARCH}"

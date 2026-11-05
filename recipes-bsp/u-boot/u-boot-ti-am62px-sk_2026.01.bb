@@ -31,7 +31,6 @@ SRC_URI[am62p-sysfw-stub-enc.sha256sum] = "9d6537148e7071f7ffbe33231c2e8ba1f17db
 SRC_URI[am62p-sysfw-cert-hs.sha256sum] = "ec3a7783d7dc6aab1085dfd131cbd08ad5f895b7f22530c90a93333c4cd22603"
 SRC_URI[am62p-sysfw-enc-hs.sha256sum] = "4d0ed21a36dd57ada78307506403204e179d81dd1f05b3db384d4b24e17c5b9d"
 
-S = "${WORKDIR}/u-boot-${PV}"
 TI_LINUX_FIRMWARE = "${S}/ti-linux-firmware"
 
 COMPATIBLE_MACHINE = "^(ti-am62px-sk)$"
