@@ -97,6 +97,15 @@ config TARGET_TI_AM62PX_SK
 	select HAS_OPTEE
 	select FTPM_STMM
 
+config TARGET_TI_AM64X_SK
+	bool "Texas Instruments AM64x SK"
+	select ARCH_ARM64
+	select HAS_SWUPDATE
+	select HAS_SECURE_BOOT
+	select HAS_DISK_ENCRYPTION
+	select HAS_OPTEE
+	select FTPM_STMM
+
 config TARGET_QEMU_ARM
 	bool "QEMU ARM (armhf)"
 	select ARCH_ARM
@@ -143,6 +152,7 @@ config KAS_INCLUDE_BOARD
 	default "kas/board/hihope-rzg2m.yml" if TARGET_HIHOPE_RZG2M
 	default "kas/board/ti-am62x-sk.yml" if TARGET_TI_AM62X_SK
 	default "kas/board/ti-am62px-sk.yml" if TARGET_TI_AM62PX_SK
+	default "kas/board/ti-am64x-sk.yml" if TARGET_TI_AM64X_SK
 	default "kas/board/qemu-arm.yml" if TARGET_QEMU_ARM
 	default "kas/board/bbb.yml" if TARGET_BBB
 	default "kas/board/de0-nano-soc.yml" if TARGET_DE0_NANO_SOC
@@ -165,15 +175,15 @@ config KERNEL_4_4
 config KERNEL_4_19
 	bool "Kernel 4.19.x-cip"
 	depends on !ARCH_RISCV64
-	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_RZT2H
+	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_TI_AM64X_SK && !TARGET_RZT2H
 
 config KERNEL_5_10
 	bool "Kernel 5.10.x-cip"
-	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_BEAGLEV_FIRE && !TARGET_RZT2H
+	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_TI_AM64X_SK && !TARGET_BEAGLEV_FIRE && !TARGET_RZT2H
 
 config KERNEL_6_1
 	bool "Kernel 6.1.x-cip"
-	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_BEAGLEV_FIRE && !TARGET_RZT2H
+	depends on !TARGET_TI_AM62PX_SK && !TARGET_TI_AM62X_SK && !TARGET_TI_AM64X_SK && !TARGET_BEAGLEV_FIRE && !TARGET_RZT2H
 
 config KERNEL_6_12
 	bool "Kernel 6.12.x-cip"
