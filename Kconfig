@@ -227,6 +227,35 @@ config KAS_INCLUDE_KERNEL_RT
 	default "kas/opt/rt.yml"
 	depends on KERNEL_RT
 
+choice
+	prompt "Kernel source"
+	depends on KERNEL_6_12
+	depends on TARGET_TI_AM62X_SK || TARGET_TI_AM62PX_SK || TARGET_TI_AM64X_SK
+	default KERNEL_SOURCE_CIP
+
+config KERNEL_SOURCE_CIP
+	bool "CIP kernel"
+
+config KERNEL_SOURCE_TI_CIP
+	bool "TI CIP kernel"
+	depends on !KERNEL_RT
+	help
+	  Build the CIP kernel with TI's platform support from the TI CIP
+	  kernel tree. It is configured with the defconfig of that tree
+	  instead of the one from cip-kernel-config.
+
+endchoice
+
+config KAS_INCLUDE_KERNEL_SOURCE
+	string
+	default "kas/opt/kernel-source-ti-cip.yml"
+	depends on KERNEL_SOURCE_TI_CIP
+
+config KAS_INCLUDE_KERNEL_HEAD_TI_CIP
+	string
+	default "kas/opt/kernel-head-ti-cip.yml"
+	depends on KERNEL_HEAD && KERNEL_SOURCE_TI_CIP
+
 if HAS_OPTEE
 
 comment "Firmware options"
