@@ -280,6 +280,15 @@ build:ti-am62px-sk-secure-boot:
     use_rt: disable
     encrypt: enable
 
+build:ti-am62x-sk-secure-boot:
+  extends:
+    - .build_base
+  variables:
+    target: ti-am62x-sk
+    extension: ebg-secure-boot-snakeoil
+    use_rt: disable
+    encrypt: enable
+
 # bookworm images
 build:qemu-amd64-bookworm:
   extends:
